@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { Snapshot, SnapshotIndex } from "./types";
+import { combineSnapshot } from "./equivalents";
 
 const DATA_DIR = join(process.cwd(), "data");
 
@@ -16,7 +17,8 @@ export async function loadSnapshot(file: string): Promise<Snapshot> {
 
 export async function loadAllSnapshots(): Promise<Snapshot[]> {
   const index = await loadIndex();
-  return Promise.all(index.snapshots.map((s) => loadSnapshot(s.file)));
+  const raw = await Promise.all(index.snapshots.map((s) => loadSnapshot(s.file)));
+  return raw.map(combineSnapshot);
 }
 
 export type WeightSeries = {

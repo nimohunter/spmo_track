@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   CartesianGrid,
   Legend,
@@ -25,32 +26,67 @@ type Props = {
 };
 
 export default function WeightChart({ tickers, series }: Props) {
+  const [isolated, setIsolated] = useState<string | null>(null);
+
+  const handleLegendClick = (entry: unknown) => {
+    const dk = (entry as { dataKey?: unknown })?.dataKey;
+    const t = typeof dk === "string" ? dk : null;
+    if (!t) return;
+    setIsolated((prev) => (prev === t ? null : t));
+  };
+
   return (
-    <ResponsiveContainer width="100%" height={500}>
-      <LineChart data={series} margin={{ top: 16, right: 24, bottom: 16, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-        <XAxis dataKey="date" />
-        <YAxis
-          tickFormatter={(v: number) => `${v.toFixed(1)}%`}
-          domain={["auto", "auto"]}
-        />
-        <Tooltip
-          formatter={(v: number) => `${v.toFixed(2)}%`}
-          labelFormatter={(l: string) => `As of ${l}`}
-        />
-        <Legend />
-        {tickers.map((t, i) => (
-          <Line
-            key={t}
-            type="monotone"
-            dataKey={t}
-            stroke={PALETTE[i % PALETTE.length]}
-            strokeWidth={2}
-            dot={{ r: 3 }}
-            connectNulls
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <span style={{ fontSize: 13, color: "var(--muted)" }}>
+          {isolated
+            ? `Isolated: ${isolated} — click the legend item again or "Show all" to reset.`
+            : "Tip: click a ticker in the legend to isolate its line."}
+        </span>
+        {isolated && (
+          <button
+            onClick={() => setIsolated(null)}
+            style={{
+              fontSize: 12,
+              padding: "4px 10px",
+              border: "1px solid var(--border)",
+              background: "#fff",
+              borderRadius: 4,
+              cursor: "pointer",
+            }}
+          >
+            Show all
+          </button>
+        )}
+      </div>
+      <ResponsiveContainer width="100%" height={500}>
+        <LineChart data={series} margin={{ top: 16, right: 24, bottom: 16, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis dataKey="date" />
+          <YAxis
+            tickFormatter={(v: number) => `${v.toFixed(1)}%`}
+            domain={["auto", "auto"]}
           />
-        ))}
-      </LineChart>
-    </ResponsiveContainer>
+          <Tooltip
+            formatter={(v: number) => `${v.toFixed(2)}%`}
+            labelFormatter={(l: string) => `As of ${l}`}
+          />
+          <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: "pointer" }} />
+          {tickers.map((t, i) => (
+            <Line
+              key={t}
+              type="monotone"
+              dataKey={t}
+              stroke={PALETTE[i % PALETTE.length]}
+              strokeWidth={isolated === t ? 3 : 2}
+              dot={{ r: 3 }}
+              connectNulls={false}
+              hide={isolated !== null && isolated !== t}
+              opacity={isolated === null || isolated === t ? 1 : 0.15}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
