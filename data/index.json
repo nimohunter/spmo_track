@@ -1,0 +1,9 @@
+{
+  "ticker": "SPMO",
+  "snapshots": [
+    {
+      "date": "2026-05-08",
+      "file": "holdings/2026-05-08.json"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+name: Fetch SPMO Holdings
+
+on:
+  # Twice yearly, a few days after SPMO's semi-annual rebalance (March / September).
+  # SPMO rebalances on the third Friday of March and September; running on the 25th
+  # gives the index plenty of time to settle.
+  # To track daily/weekly drift, change to e.g. "0 12 * * *" (daily) or "0 12 * * 1" (Mondays).
+  schedule:
+    - cron: "0 12 25 3 *"
+    - cron: "0 12 25 9 *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - run: npm ci
+
+      - run: npm run fetch
+
+      - name: Commit snapshot
+        run: |
+          if [ -z "$(git status --porcelain data/)" ]; then
+            echo "No changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git commit -m "data: SPMO holdings snapshot $(date -u +%Y-%m-%d)"
+          git push
