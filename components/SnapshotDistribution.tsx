@@ -42,8 +42,6 @@ export default function SnapshotDistribution({ snapshots }: Props) {
   const snap = sorted[idx];
   const top = snap.holdings.slice(0, TOP_N);
   const totalWeight = top.reduce((a, h) => a + h.weight, 0);
-  // Reverse for chart so largest weight renders at the top of the YAxis.
-  const chartData = [...top].reverse();
 
   const goto = (delta: number) => {
     const next = idx + delta;
@@ -87,7 +85,7 @@ export default function SnapshotDistribution({ snapshots }: Props) {
             minWidth: 140,
           }}
         >
-          {sorted.map((s) => (
+          {[...sorted].reverse().map((s) => (
             <option key={s.asOfDate} value={s.asOfDate}>
               {s.asOfDate}
             </option>
@@ -109,7 +107,7 @@ export default function SnapshotDistribution({ snapshots }: Props) {
 
       <ResponsiveContainer width="100%" height={Math.max(400, top.length * 26)}>
         <BarChart
-          data={chartData}
+          data={top}
           layout="vertical"
           margin={{ top: 8, right: 60, bottom: 8, left: 0 }}
         >
@@ -128,8 +126,8 @@ export default function SnapshotDistribution({ snapshots }: Props) {
             }}
           />
           <Bar dataKey="weight" radius={[0, 3, 3, 0]} label={{ position: "right", formatter: (v: number) => `${v.toFixed(2)}%`, fontSize: 11, fill: "#374151" }}>
-            {chartData.map((_, i) => (
-              <Cell key={i} fill={PALETTE[chartData.length - 1 - i]} />
+            {top.map((_, i) => (
+              <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
             ))}
           </Bar>
         </BarChart>
