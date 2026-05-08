@@ -19,10 +19,15 @@ GitHub Actions cron ──► fetch from stockanalysis.com ──► commit data
 
 ```bash
 npm install
-npm run fetch       # pull a fresh snapshot into data/holdings/
+npm run fetch       # pull a fresh snapshot from stockanalysis.com
+npm run backfill    # one-time: pull historical quarterly snapshots from SEC EDGAR
 npm run dev         # http://localhost:3000
 npm run build       # static production build
 ```
+
+### Historical backfill
+
+`scripts/backfill-edgar.ts` pulls SPMO's quarterly N-PORT filings from SEC EDGAR (CIK 1378872, series S000050154) over the past 3 years. Tickers are missing from N-PORT XML, so it resolves them via the free OpenFIGI API (ISIN → ticker). The result: 12 quarter-end snapshots covering 2023-05-31 through the most recent fiscal-quarter filing, plus daily snapshots from `npm run fetch` going forward.
 
 ## Deploying to Vercel
 
