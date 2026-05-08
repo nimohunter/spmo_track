@@ -1,4 +1,5 @@
 import WeightChart from "@/components/WeightChart";
+import SnapshotDistribution from "@/components/SnapshotDistribution";
 import { buildWeightSeries, loadAllSnapshots } from "@/lib/data";
 import type { Snapshot } from "@/lib/types";
 
@@ -47,6 +48,11 @@ export default async function Page() {
 
       <div className="card">
         <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>Weight changes over time</h2>
+        <p style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 13 }}>
+          Showing every stock that has been in the top {TOP_N} at any snapshot
+          ({tickers.length} tickers, ranked by total weight across all dates).
+          Stocks that have left the index appear as broken lines.
+        </p>
         {sorted.length === 1 ? (
           <p style={{ color: "var(--muted)", margin: 0 }}>
             Need at least two snapshots to draw a chart. Come back after the next scheduled run.
@@ -54,6 +60,13 @@ export default async function Page() {
         ) : (
           <WeightChart tickers={tickers} series={series} />
         )}
+      </div>
+
+      <div className="card">
+        <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>Holdings distribution by date</h2>
+        <SnapshotDistribution
+          snapshots={sorted.map((s) => ({ asOfDate: s.asOfDate, holdings: s.holdings }))}
+        />
       </div>
 
       <div className="card">
