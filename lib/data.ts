@@ -15,9 +15,15 @@ export async function loadSnapshot(file: string): Promise<Snapshot> {
   return JSON.parse(raw) as Snapshot;
 }
 
+function isReconstitutionDate(date: string): boolean {
+  const month = date.slice(5, 7); // "YYYY-MM-DD" → "MM"
+  return month === "05" || month === "11";
+}
+
 export async function loadAllSnapshots(): Promise<Snapshot[]> {
   const index = await loadIndex();
-  const raw = await Promise.all(index.snapshots.map((s) => loadSnapshot(s.file)));
+  const reconstitution = index.snapshots.filter((s) => isReconstitutionDate(s.date));
+  const raw = await Promise.all(reconstitution.map((s) => loadSnapshot(s.file)));
   return raw.map(combineSnapshot);
 }
 

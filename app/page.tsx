@@ -43,7 +43,7 @@ export default async function Page() {
       <h1>SPMO Top 20 Tracker</h1>
       <p className="subtitle">
         Invesco S&amp;P 500 Momentum ETF — top {TOP_N} holdings, weight % over time.
-        Latest snapshot {latest.asOfDate} · {sorted.length} snapshot{sorted.length === 1 ? "" : "s"} on file.
+        Latest snapshot {latest.asOfDate} · {sorted.length} semi-annual reconstitution{sorted.length === 1 ? "" : "s"} (May &amp; Nov only).
       </p>
 
       <div className="card">
