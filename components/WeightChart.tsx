@@ -74,19 +74,23 @@ export default function WeightChart({ tickers, series }: Props) {
             labelFormatter={(l: string) => `As of ${l}`}
           />
           <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: "pointer" }} />
-          {tickers.map((t, i) => (
-            <Line
-              key={t}
-              type="monotone"
-              dataKey={t}
-              stroke={PALETTE[i % PALETTE.length]}
-              strokeWidth={isolated === t ? 3 : 2}
-              dot={{ r: 3 }}
-              connectNulls={false}
-              hide={isolated !== null && isolated !== t}
-              opacity={isolated === null || isolated === t ? 1 : 0.15}
-            />
-          ))}
+          {tickers.map((t, i) => {
+            const dimmed = isolated !== null && isolated !== t;
+            return (
+              <Line
+                key={t}
+                type="monotone"
+                dataKey={t}
+                stroke={PALETTE[i % PALETTE.length]}
+                strokeWidth={isolated === t ? 3 : 2}
+                dot={dimmed ? false : { r: 3 }}
+                activeDot={dimmed ? false : { r: 5 }}
+                connectNulls={false}
+                opacity={dimmed ? 0.08 : 1}
+                isAnimationActive={false}
+              />
+            );
+          })}
         </LineChart>
       </ResponsiveContainer>
     </div>

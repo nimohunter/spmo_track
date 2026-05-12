@@ -1,183 +1,701 @@
 {
   "ticker": "SPMO",
   "asOfDate": "2026-05-08",
-  "fetchedAt": "2026-05-08T08:10:07.080Z",
-  "source": "https://stockanalysis.com/api/symbol/e/SPMO/holdings",
+  "fetchedAt": "2026-05-12T06:44:41.942Z",
+  "source": "invesco-csv:invesco_s&p_500®_momentum_etf-monthly_holdings (1).csv",
   "holdings": [
     {
       "rank": 1,
       "ticker": "NVDA",
-      "name": "NVIDIA Corporation",
-      "weight": 8.59,
-      "shares": 7492661
+      "name": "NVIDIA Corp",
+      "weight": 9.01,
+      "shares": 7659415
     },
     {
       "rank": 2,
-      "ticker": "AVGO",
-      "name": "Broadcom Inc.",
-      "weight": 7.91,
-      "shares": 3172700
+      "ticker": "MU",
+      "name": "Micron Technology Inc",
+      "weight": 8.62,
+      "shares": 2112089
     },
     {
       "rank": 3,
-      "ticker": "MU",
-      "name": "Micron Technology, Inc.",
-      "weight": 7.72,
-      "shares": 2066107
+      "ticker": "AVGO",
+      "name": "Broadcom Inc",
+      "weight": 7.62,
+      "shares": 3243335
     },
     {
       "rank": 4,
       "ticker": "GOOGL",
-      "name": "Alphabet Inc.",
-      "weight": 5.36,
-      "shares": 2364953
+      "name": "Alphabet Inc",
+      "weight": 5.3,
+      "shares": 2417583
     },
     {
       "rank": 5,
       "ticker": "GOOG",
-      "name": "Alphabet Inc.",
-      "weight": 4.25,
-      "shares": 1895210
+      "name": "Alphabet Inc",
+      "weight": 4.2,
+      "shares": 1937314
     },
     {
       "rank": 6,
       "ticker": "JNJ",
       "name": "Johnson & Johnson",
-      "weight": 4.21,
-      "shares": 3197075
+      "weight": 3.95,
+      "shares": 3268264
     },
     {
       "rank": 7,
-      "ticker": "LRCX",
-      "name": "Lam Research Corporation",
-      "weight": 3.35,
-      "shares": 2079126
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices Inc",
+      "weight": 3.82,
+      "shares": 1533757
     },
     {
       "rank": 8,
-      "ticker": "XOM",
-      "name": "Exxon Mobil Corporation",
-      "weight": 3.23,
-      "shares": 3577674
+      "ticker": "LRCX",
+      "name": "Lam Research Corp",
+      "weight": 3.42,
+      "shares": 2125385
     },
     {
       "rank": 9,
-      "ticker": "AMD",
-      "name": "Advanced Micro Devices, Inc.",
-      "weight": 3.11,
-      "shares": 1500240
+      "ticker": "INTC",
+      "name": "Intel Corp",
+      "weight": 3.36,
+      "shares": 4924087
     },
     {
       "rank": 10,
-      "ticker": "INTC",
-      "name": "Intel Corporation",
-      "weight": 3.04,
-      "shares": 4816888
+      "ticker": "XOM",
+      "name": "Exxon Mobil Corp",
+      "weight": 2.89,
+      "shares": 3657450
     },
     {
       "rank": 11,
       "ticker": "CAT",
-      "name": "Caterpillar Inc.",
-      "weight": 2.93,
-      "shares": 555411
+      "name": "Caterpillar Inc",
+      "weight": 2.79,
+      "shares": 567876
     },
     {
       "rank": 12,
       "ticker": "SNDK",
-      "name": "Sandisk Corporation",
-      "weight": 2.22,
-      "shares": 271195
+      "name": "Sandisk Corp/DE",
+      "weight": 2.37,
+      "shares": 277289
     },
     {
       "rank": 13,
-      "ticker": "STX",
-      "name": "Seagate Technology Holdings plc",
-      "weight": 1.8,
-      "shares": 400147
+      "ticker": "AMAT",
+      "name": "Applied Materials Inc",
+      "weight": 1.79,
+      "shares": 753283
     },
     {
       "rank": 14,
-      "ticker": "AMAT",
-      "name": "Applied Materials, Inc.",
-      "weight": 1.77,
-      "shares": 736940
+      "ticker": "STX",
+      "name": "Seagate Technology Holdings PLC",
+      "weight": 1.75,
+      "shares": 409011
     },
     {
       "rank": 15,
       "ticker": "CSCO",
-      "name": "Cisco Systems, Inc.",
-      "weight": 1.73,
-      "shares": 3135937
+      "name": "Cisco Systems Inc",
+      "weight": 1.69,
+      "shares": 3205741
     },
     {
       "rank": 16,
       "ticker": "WDC",
-      "name": "Western Digital Corporation",
-      "weight": 1.69,
-      "shares": 622371
+      "name": "Western Digital Corp",
+      "weight": 1.67,
+      "shares": 636221
     },
     {
       "rank": 17,
-      "ticker": "GEV",
-      "name": "GE Vernova Inc.",
-      "weight": 1.64,
-      "shares": 256353
+      "ticker": "GE",
+      "name": "General Electric Co",
+      "weight": 1.57,
+      "shares": 965523
     },
     {
       "rank": 18,
-      "ticker": "GE",
-      "name": "GE Aerospace",
-      "weight": 1.58,
-      "shares": 944471
+      "ticker": "GEV",
+      "name": "GE Vernova Inc",
+      "weight": 1.49,
+      "shares": 262170
     },
     {
       "rank": 19,
       "ticker": "RTX",
-      "name": "RTX Corporation",
-      "weight": 1.47,
-      "shares": 1453161
+      "name": "RTX Corp",
+      "weight": 1.43,
+      "shares": 1485570
     },
     {
       "rank": 20,
-      "ticker": "GS",
-      "name": "The Goldman Sachs Group, Inc.",
-      "weight": 1.39,
-      "shares": 260005
+      "ticker": "KLAC",
+      "name": "KLA Corp",
+      "weight": 1.41,
+      "shares": 138140
     },
     {
       "rank": 21,
-      "ticker": "KLAC",
-      "name": "KLA Corporation",
-      "weight": 1.37,
-      "shares": 135093
+      "ticker": "GS",
+      "name": "Goldman Sachs Group Inc/The",
+      "weight": 1.36,
+      "shares": 265822
     },
     {
       "rank": 22,
       "ticker": "PM",
-      "name": "Philip Morris International Inc.",
-      "weight": 1.35,
-      "shares": 1364162
+      "name": "Philip Morris International Inc",
+      "weight": 1.3,
+      "shares": 1394632
     },
     {
       "rank": 23,
       "ticker": "PLTR",
-      "name": "Palantir Technologies Inc.",
-      "weight": 1.32,
-      "shares": 1659712
+      "name": "Palantir Technologies Inc",
+      "weight": 1.28,
+      "shares": 1696553
     },
     {
       "rank": 24,
       "ticker": "KO",
-      "name": "The Coca-Cola Company",
-      "weight": 1.31,
-      "shares": 2865642
+      "name": "Coca-Cola Co/The",
+      "weight": 1.26,
+      "shares": 2929352
     },
     {
       "rank": 25,
+      "ticker": "NEM",
+      "name": "Newmont Corp",
+      "weight": 1.21,
+      "shares": 1907036
+    },
+    {
+      "rank": 26,
       "ticker": "APH",
-      "name": "Amphenol Corporation",
-      "weight": 1.3,
-      "shares": 1633252
+      "name": "Amphenol Corp",
+      "weight": 1.17,
+      "shares": 1669539
+    },
+    {
+      "rank": 27,
+      "ticker": "GLW",
+      "name": "Corning Inc",
+      "weight": 1.03,
+      "shares": 1003521
+    },
+    {
+      "rank": 28,
+      "ticker": "C",
+      "name": "Citigroup Inc",
+      "weight": 1.02,
+      "shares": 1477329
+    },
+    {
+      "rank": 29,
+      "ticker": "MS",
+      "name": "Morgan Stanley",
+      "weight": 0.94,
+      "shares": 885763
+    },
+    {
+      "rank": 30,
+      "ticker": "ADI",
+      "name": "Analog Devices Inc",
+      "weight": 0.86,
+      "shares": 376494
+    },
+    {
+      "rank": 31,
+      "ticker": "GILD",
+      "name": "Gilead Sciences Inc",
+      "weight": 0.84,
+      "shares": 1174763
+    },
+    {
+      "rank": 32,
+      "ticker": "WELL",
+      "name": "Welltower Inc",
+      "weight": 0.83,
+      "shares": 708737
+    },
+    {
+      "rank": 33,
+      "ticker": "CIEN",
+      "name": "Ciena Corp",
+      "weight": 0.62,
+      "shares": 207755
+    },
+    {
+      "rank": 34,
+      "ticker": "HWM",
+      "name": "Howmet Aerospace Inc",
+      "weight": 0.6,
+      "shares": 407384
+    },
+    {
+      "rank": 35,
+      "ticker": "SCHW",
+      "name": "Charles Schwab Corp/The",
+      "weight": 0.59,
+      "shares": 1206159
+    },
+    {
+      "rank": 36,
+      "ticker": "CMI",
+      "name": "Cummins Inc",
+      "weight": 0.56,
+      "shares": 149828
+    },
+    {
+      "rank": 37,
+      "ticker": "PWR",
+      "name": "Quanta Services Inc",
+      "weight": 0.53,
+      "shares": 129658
+    },
+    {
+      "rank": 38,
+      "ticker": "FIX",
+      "name": "Comfort Systems USA Inc",
+      "weight": 0.53,
+      "shares": 49418
+    },
+    {
+      "rank": 39,
+      "ticker": "LMT",
+      "name": "Lockheed Martin Corp",
+      "weight": 0.49,
+      "shares": 178488
+    },
+    {
+      "rank": 40,
+      "ticker": "BK",
+      "name": "Bank of New York Mellon Corp/The",
+      "weight": 0.49,
+      "shares": 687816
+    },
+    {
+      "rank": 41,
+      "ticker": "MO",
+      "name": "Altria Group Inc",
+      "weight": 0.48,
+      "shares": 1302484
+    },
+    {
+      "rank": 42,
+      "ticker": "MCK",
+      "name": "McKesson Corp",
+      "weight": 0.47,
+      "shares": 117722
+    },
+    {
+      "rank": 43,
+      "ticker": "GD",
+      "name": "General Dynamics Corp",
+      "weight": 0.47,
+      "shares": 249879
+    },
+    {
+      "rank": 44,
+      "ticker": "MNST",
+      "name": "Monster Beverage Corp",
+      "weight": 0.46,
+      "shares": 967284
+    },
+    {
+      "rank": 45,
+      "ticker": "JCI",
+      "name": "Johnson Controls International plc",
+      "weight": 0.45,
+      "shares": 593927
+    },
+    {
+      "rank": 46,
+      "ticker": "CME",
+      "name": "CME Group Inc",
+      "weight": 0.44,
+      "shares": 283728
+    },
+    {
+      "rank": 47,
+      "ticker": "PH",
+      "name": "Parker-Hannifin Corp",
+      "weight": 0.43,
+      "shares": 88867
+    },
+    {
+      "rank": 48,
+      "ticker": "LHX",
+      "name": "L3Harris Technologies Inc",
+      "weight": 0.41,
+      "shares": 253271
+    },
+    {
+      "rank": 49,
+      "ticker": "GM",
+      "name": "General Motors Co",
+      "weight": 0.4,
+      "shares": 935180
+    },
+    {
+      "rank": 50,
+      "ticker": "FCX",
+      "name": "Freeport-McMoRan Inc",
+      "weight": 0.4,
+      "shares": 1192821
+    },
+    {
+      "rank": 51,
+      "ticker": "HCA",
+      "name": "HCA Healthcare Inc",
+      "weight": 0.36,
+      "shares": 152306
+    },
+    {
+      "rank": 52,
+      "ticker": "NOC",
+      "name": "Northrop Grumman Corp",
+      "weight": 0.35,
+      "shares": 118007
+    },
+    {
+      "rank": 53,
+      "ticker": "MPWR",
+      "name": "Monolithic Power Systems Inc",
+      "weight": 0.34,
+      "shares": 39396
+    },
+    {
+      "rank": 54,
+      "ticker": "WMB",
+      "name": "Williams Cos Inc/The",
+      "weight": 0.33,
+      "shares": 829399
+    },
+    {
+      "rank": 55,
+      "ticker": "AEP",
+      "name": "American Electric Power Co Inc",
+      "weight": 0.32,
+      "shares": 446754
+    },
+    {
+      "rank": 56,
+      "ticker": "CAH",
+      "name": "Cardinal Health Inc",
+      "weight": 0.32,
+      "shares": 315948
+    },
+    {
+      "rank": 57,
+      "ticker": "TEL",
+      "name": "TE Connectivity PLC",
+      "weight": 0.31,
+      "shares": 276033
+    },
+    {
+      "rank": 58,
+      "ticker": "TER",
+      "name": "Teradyne Inc",
+      "weight": 0.31,
+      "shares": 155265
+    },
+    {
+      "rank": 59,
+      "ticker": "COR",
+      "name": "Cencora Inc",
+      "weight": 0.28,
+      "shares": 199057
+    },
+    {
+      "rank": 60,
+      "ticker": "HOOD",
+      "name": "Robinhood Markets Inc",
+      "weight": 0.25,
+      "shares": 602988
+    },
+    {
+      "rank": 61,
+      "ticker": "ROK",
+      "name": "Rockwell Automation Inc",
+      "weight": 0.25,
+      "shares": 101965
+    },
+    {
+      "rank": 62,
+      "ticker": "F",
+      "name": "Ford Motor Co",
+      "weight": 0.22,
+      "shares": 3291089
+    },
+    {
+      "rank": 63,
+      "ticker": "VTR",
+      "name": "Ventas Inc",
+      "weight": 0.2,
+      "shares": 410370
+    },
+    {
+      "rank": 64,
+      "ticker": "IDXX",
+      "name": "IDEXX Laboratories Inc",
+      "weight": 0.2,
+      "shares": 63891
+    },
+    {
+      "rank": 65,
+      "ticker": "EME",
+      "name": "EMCOR Group Inc",
+      "weight": 0.2,
+      "shares": 38728
+    },
+    {
+      "rank": 66,
+      "ticker": "ETR",
+      "name": "Entergy Corp",
+      "weight": 0.19,
+      "shares": 314016
+    },
+    {
+      "rank": 67,
+      "ticker": "EBAY",
+      "name": "eBay Inc",
+      "weight": 0.18,
+      "shares": 310197
+    },
+    {
+      "rank": 68,
+      "ticker": "DG",
+      "name": "Dollar General Corp",
+      "weight": 0.18,
+      "shares": 291886
+    },
+    {
+      "rank": 69,
+      "ticker": "CBOE",
+      "name": "Cboe Global Markets Inc",
+      "weight": 0.17,
+      "shares": 88105
+    },
+    {
+      "rank": 70,
+      "ticker": "STT",
+      "name": "State Street Corp",
+      "weight": 0.17,
+      "shares": 204790
+    },
+    {
+      "rank": 71,
+      "ticker": "ADM",
+      "name": "Archer-Daniels-Midland Co",
+      "weight": 0.16,
+      "shares": 369510
+    },
+    {
+      "rank": 72,
+      "ticker": "JBL",
+      "name": "Jabil Inc",
+      "weight": 0.15,
+      "shares": 77047
+    },
+    {
+      "rank": 73,
+      "ticker": "CHRW",
+      "name": "CH Robinson Worldwide Inc",
+      "weight": 0.15,
+      "shares": 155287
+    },
+    {
+      "rank": 74,
+      "ticker": "TPR",
+      "name": "Tapestry Inc",
+      "weight": 0.14,
+      "shares": 194682
+    },
+    {
+      "rank": 75,
+      "ticker": "WEC",
+      "name": "WEC Energy Group Inc",
+      "weight": 0.13,
+      "shares": 216201
+    },
+    {
+      "rank": 76,
+      "ticker": "CNP",
+      "name": "CenterPoint Energy Inc",
+      "weight": 0.13,
+      "shares": 572249
+    },
+    {
+      "rank": 77,
+      "ticker": "NTRS",
+      "name": "Northern Trust Corp",
+      "weight": 0.13,
+      "shares": 143257
+    },
+    {
+      "rank": 78,
+      "ticker": "ALB",
+      "name": "Albemarle Corp",
+      "weight": 0.12,
+      "shares": 111088
+    },
+    {
+      "rank": 79,
+      "ticker": "ATO",
+      "name": "Atmos Energy Corp",
+      "weight": 0.12,
+      "shares": 123044
+    },
+    {
+      "rank": 80,
+      "ticker": "HSY",
+      "name": "Hershey Co/The",
+      "weight": 0.12,
+      "shares": 115438
+    },
+    {
+      "rank": 81,
+      "ticker": "ULTA",
+      "name": "Ulta Beauty Inc",
+      "weight": 0.11,
+      "shares": 38429
+    },
+    {
+      "rank": 82,
+      "ticker": "NRG",
+      "name": "NRG Energy Inc",
+      "weight": 0.11,
+      "shares": 140130
+    },
+    {
+      "rank": 83,
+      "ticker": "HII",
+      "name": "Huntington Ingalls Industries Inc",
+      "weight": 0.1,
+      "shares": 57893
+    },
+    {
+      "rank": 84,
+      "ticker": "EXPD",
+      "name": "Expeditors International of Washington Inc",
+      "weight": 0.1,
+      "shares": 114984
+    },
+    {
+      "rank": 85,
+      "ticker": "FE",
+      "name": "FirstEnergy Corp",
+      "weight": 0.1,
+      "shares": 396700
+    },
+    {
+      "rank": 86,
+      "ticker": "NI",
+      "name": "NiSource Inc",
+      "weight": 0.09,
+      "shares": 347768
+    },
+    {
+      "rank": 87,
+      "ticker": "EVRG",
+      "name": "Evergy Inc",
+      "weight": 0.09,
+      "shares": 198995
+    },
+    {
+      "rank": 88,
+      "ticker": "BG",
+      "name": "Bunge Global SA",
+      "weight": 0.09,
+      "shares": 125846
+    },
+    {
+      "rank": 89,
+      "ticker": "DLTR",
+      "name": "Dollar Tree Inc",
+      "weight": 0.08,
+      "shares": 152802
+    },
+    {
+      "rank": 90,
+      "ticker": "L",
+      "name": "Loews Corp",
+      "weight": 0.07,
+      "shares": 131301
+    },
+    {
+      "rank": 91,
+      "ticker": "LDOS",
+      "name": "Leidos Holdings Inc",
+      "weight": 0.07,
+      "shares": 103208
+    },
+    {
+      "rank": 92,
+      "ticker": "ROL",
+      "name": "Rollins Inc",
+      "weight": 0.07,
+      "shares": 240011
+    },
+    {
+      "rank": 93,
+      "ticker": "HAS",
+      "name": "Hasbro Inc",
+      "weight": 0.07,
+      "shares": 125303
+    },
+    {
+      "rank": 94,
+      "ticker": "FOXA",
+      "name": "Fox Corp",
+      "weight": 0.06,
+      "shares": 172843
+    },
+    {
+      "rank": 95,
+      "ticker": "RL",
+      "name": "Ralph Lauren Corp",
+      "weight": 0.05,
+      "shares": 27394
+    },
+    {
+      "rank": 96,
+      "ticker": "IVZ",
+      "name": "Invesco Ltd",
+      "weight": 0.05,
+      "shares": 334161
+    },
+    {
+      "rank": 97,
+      "ticker": "TKO",
+      "name": "TKO Group Holdings Inc",
+      "weight": 0.04,
+      "shares": 43822
+    },
+    {
+      "rank": 98,
+      "ticker": "FOX",
+      "name": "Fox Corp",
+      "weight": 0.03,
+      "shares": 109142
+    },
+    {
+      "rank": 99,
+      "ticker": "LUV",
+      "name": "Southwest Airlines Co",
+      "weight": 0.02,
+      "shares": 94479
     }
   ]
 }

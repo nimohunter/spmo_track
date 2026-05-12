@@ -1,6 +1,12 @@
 import { readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { Snapshot, SnapshotIndex } from "./types";
+import type {
+  MonthlyRanking,
+  RankingIndex,
+  Snapshot,
+  SnapshotIndex,
+} from "./types";
 import { combineSnapshot } from "./equivalents";
 
 const DATA_DIR = join(process.cwd(), "data");
@@ -25,6 +31,24 @@ export async function loadAllSnapshots(): Promise<Snapshot[]> {
   const reconstitution = index.snapshots.filter((s) => isReconstitutionDate(s.date));
   const raw = await Promise.all(reconstitution.map((s) => loadSnapshot(s.file)));
   return raw.map(combineSnapshot);
+}
+
+const RANKING_INDEX_PATH = join(DATA_DIR, "rankings-index.json");
+
+export async function loadRankingIndex(): Promise<RankingIndex> {
+  if (!existsSync(RANKING_INDEX_PATH)) return { rankings: [] };
+  const raw = await readFile(RANKING_INDEX_PATH, "utf8");
+  return JSON.parse(raw) as RankingIndex;
+}
+
+export async function loadRanking(file: string): Promise<MonthlyRanking> {
+  const raw = await readFile(join(DATA_DIR, file), "utf8");
+  return JSON.parse(raw) as MonthlyRanking;
+}
+
+export async function loadAllRankings(): Promise<MonthlyRanking[]> {
+  const index = await loadRankingIndex();
+  return Promise.all(index.rankings.map((r) => loadRanking(r.file)));
 }
 
 export type WeightSeries = {

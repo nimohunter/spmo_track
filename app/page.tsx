@@ -1,3 +1,4 @@
+import Link from "next/link";
 import WeightChart from "@/components/WeightChart";
 import SnapshotDistribution from "@/components/SnapshotDistribution";
 import { buildWeightSeries, loadAllSnapshots } from "@/lib/data";
@@ -26,6 +27,7 @@ export default async function Page() {
   if (snapshots.length === 0) {
     return (
       <main>
+        <Nav />
         <h1>SPMO Top 20 Tracker</h1>
         <p>No snapshots yet. Run <code>npm run fetch</code> or wait for the GitHub Action.</p>
       </main>
@@ -40,6 +42,7 @@ export default async function Page() {
 
   return (
     <main>
+      <Nav />
       <h1>SPMO Top 20 Tracker</h1>
       <p className="subtitle">
         Invesco S&amp;P 500 Momentum ETF — top {TOP_N} holdings, weight % over time.
@@ -101,5 +104,18 @@ export default async function Page() {
         Source: <a href={latest.source}>{latest.source}</a> · Snapshots collected via GitHub Actions.
       </footer>
     </main>
+  );
+}
+
+function Nav() {
+  return (
+    <nav style={{ marginBottom: 20, display: "flex", gap: 16, fontSize: 14 }}>
+      <Link href="/" style={{ color: "var(--accent)", fontWeight: 600 }}>
+        SPMO holdings
+      </Link>
+      <Link href="/ranking" style={{ color: "var(--accent)" }}>
+        Monthly ranking →
+      </Link>
+    </nav>
   );
 }

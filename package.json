@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "fetch": "tsx scripts/fetch-holdings.ts",
-    "backfill": "tsx scripts/backfill-edgar.ts"
+    "backfill": "tsx scripts/backfill-edgar.ts",
+    "fetch:sp500": "tsx scripts/fetch-sp500-list.ts",
+    "fetch:prices": "tsx scripts/fetch-prices.ts",
+    "fetch:mcaps": "tsx scripts/fetch-marketcaps.ts",
+    "compute:rankings": "tsx scripts/compute-rankings.ts",
+    "import:invesco": "tsx scripts/import-invesco.ts"
   },
   "dependencies": {
     "next": "^15.1.0",
