@@ -74,6 +74,7 @@ export default function RankingTable({ entries, topN }: Props) {
               <th>Ticker</th>
               <th>Name</th>
               <th>Sector</th>
+              <th className="num">Mcap</th>
               <th className="num">MV (12m)</th>
               <th className="num">Z</th>
               <th className="num">Score×</th>
@@ -90,6 +91,7 @@ export default function RankingTable({ entries, topN }: Props) {
                 <td><strong>{e.ticker}</strong></td>
                 <td>{e.name}</td>
                 <td style={{ color: "var(--muted)", fontSize: 13 }}>{e.sector}</td>
+                <td className="num">{formatMcap(e.marketCap)}</td>
                 <td className="num">{(e.mv * 100).toFixed(1)}%</td>
                 <td className="num" style={zStyle(e.z)}>{e.z.toFixed(2)}</td>
                 <td className="num">{e.scoreMul.toFixed(2)}</td>
@@ -123,6 +125,14 @@ function pillStyle(active: boolean): React.CSSProperties {
     color: active ? "#fff" : "inherit",
     cursor: "pointer",
   };
+}
+
+function formatMcap(mc: number | null): React.ReactNode {
+  if (mc == null || mc <= 0) return <span style={{ color: "var(--muted)" }}>—</span>;
+  if (mc >= 1e12) return `$${(mc / 1e12).toFixed(2)}T`;
+  if (mc >= 1e9) return `$${(mc / 1e9).toFixed(1)}B`;
+  if (mc >= 1e6) return `$${(mc / 1e6).toFixed(0)}M`;
+  return `$${mc.toFixed(0)}`;
 }
 
 function formatWeight(w: number | null): React.ReactNode {
