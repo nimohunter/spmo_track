@@ -21,15 +21,54 @@ export async function loadSnapshot(file: string): Promise<Snapshot> {
   return JSON.parse(raw) as Snapshot;
 }
 
-function isReconstitutionDate(date: string): boolean {
-  const month = date.slice(5, 7); // "YYYY-MM-DD" → "MM"
-  return month === "05" || month === "11";
+// SPMO follows the S&P 500 Momentum Index, which rebalances after the close of
+// the 3rd Friday of March and September. The May 31 / Nov 30 NPORT filings are
+// the first regulatory snapshots after each rebalance and show the new
+// constituent set; Feb 28 / Aug 31 NPORTs are mid-cycle (weights drift only).
+// For non-NPORT files (e.g. daily Invesco snapshots) we keep the earliest
+// snapshot in each rebalance period — anything later in the same period is
+// the same constituents with just drift, so it'd clutter the chart.
+function thirdFridayOfMonth(year: number, month: number): string {
+  const first = new Date(Date.UTC(year, month - 1, 1));
+  const offsetToFirstFriday = (5 - first.getUTCDay() + 7) % 7;
+  const day = 1 + offsetToFirstFriday + 14;
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+export function postRebalanceSnapshotDates(allDates: string[]): Set<string> {
+  if (allDates.length === 0) return new Set();
+  const years = allDates.map((d) => Number(d.slice(0, 4)));
+  const yearStart = Math.min(...years) - 1;
+  const yearEnd = Math.max(...years) + 1;
+  const rebDates: string[] = [];
+  for (let y = yearStart; y <= yearEnd; y++) {
+    rebDates.push(thirdFridayOfMonth(y, 3));
+    rebDates.push(thirdFridayOfMonth(y, 9));
+  }
+
+  const byPeriod = new Map<string, string[]>();
+  for (const date of allDates) {
+    let periodStart = "0000-00-00";
+    for (const reb of rebDates) {
+      if (reb < date) periodStart = reb;
+      else break;
+    }
+    if (!byPeriod.has(periodStart)) byPeriod.set(periodStart, []);
+    byPeriod.get(periodStart)!.push(date);
+  }
+  const markers = new Set<string>();
+  for (const dates of byPeriod.values()) {
+    dates.sort();
+    markers.add(dates[0]);
+  }
+  return markers;
 }
 
 export async function loadAllSnapshots(): Promise<Snapshot[]> {
   const index = await loadIndex();
-  const reconstitution = index.snapshots.filter((s) => isReconstitutionDate(s.date));
-  const raw = await Promise.all(reconstitution.map((s) => loadSnapshot(s.file)));
+  const markers = postRebalanceSnapshotDates(index.snapshots.map((s) => s.date));
+  const kept = index.snapshots.filter((s) => markers.has(s.date));
+  const raw = await Promise.all(kept.map((s) => loadSnapshot(s.file)));
   return raw.map(combineSnapshot);
 }
 
