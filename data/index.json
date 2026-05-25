@@ -52,6 +52,10 @@
     {
       "date": "2026-05-08",
       "file": "holdings/2026-05-08.json"
+    },
+    {
+      "date": "2026-05-25",
+      "file": "holdings/2026-05-25.json"
     }
   ]
 }
