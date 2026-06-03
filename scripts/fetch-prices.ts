@@ -13,8 +13,8 @@ const ROOT = join(SCRIPT_DIR, "..");
 const SP500_PATH = join(ROOT, "data", "sp500.json");
 const PRICES_DIR = join(ROOT, "data", "prices");
 const RANGE = "2y";
-const REQUEST_DELAY_MS = 250;
 const FRESH_HOURS = 24;
+const DEFAULT_CONCURRENCY = 8;
 
 type YahooResponse = {
   chart: {
@@ -126,13 +126,18 @@ function parseArgs(argv: string[]): {
   limit?: number;
   only?: string[];
   force: boolean;
+  concurrency: number;
 } {
-  const out: { limit?: number; only?: string[]; force: boolean } = { force: false };
+  const out: { limit?: number; only?: string[]; force: boolean; concurrency: number } = {
+    force: false,
+    concurrency: DEFAULT_CONCURRENCY,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--limit") out.limit = Number(argv[++i]);
     else if (a === "--only") out.only = argv[++i].split(",").map((s) => s.trim());
     else if (a === "--force") out.force = true;
+    else if (a === "--concurrency") out.concurrency = Math.max(1, Number(argv[++i]));
   }
   return out;
 }
@@ -149,29 +154,39 @@ async function main(): Promise<void> {
   let skipped = 0;
   const failures: Array<{ ticker: string; error: string }> = [];
 
-  for (let i = 0; i < targets.length; i++) {
-    const ticker = targets[i];
-    const outPath = join(PRICES_DIR, tickerToFile(ticker));
-    if (!args.force && (await isFresh(outPath))) {
-      skipped++;
-      continue;
-    }
-    try {
-      const hist = await fetchOne(ticker);
-      await writeFile(outPath, JSON.stringify(hist, null, 2) + "\n", "utf8");
-      ok++;
-      process.stdout.write(
-        `  [${i + 1}/${targets.length}] ${ticker} → ${hist.bars.length} bars\n`,
-      );
-    } catch (e) {
-      const msg = (e as Error).message;
-      failures.push({ ticker, error: msg });
-      process.stdout.write(`  [${i + 1}/${targets.length}] ${ticker} FAILED: ${msg}\n`);
-    }
-    if (i < targets.length - 1) {
-      await new Promise((r) => setTimeout(r, REQUEST_DELAY_MS));
+  // Bounded worker pool: `concurrency` tickers in flight at once. Each still
+  // pulls the full 2y window, so adjusted closes stay internally consistent.
+  const total = targets.length;
+  let next = 0;
+  let done = 0;
+  const concurrency = Math.min(args.concurrency, total);
+
+  async function worker(): Promise<void> {
+    while (next < total) {
+      const i = next++;
+      const ticker = targets[i];
+      const outPath = join(PRICES_DIR, tickerToFile(ticker));
+      if (!args.force && (await isFresh(outPath))) {
+        skipped++;
+        done++;
+        continue;
+      }
+      try {
+        const hist = await fetchOne(ticker);
+        await writeFile(outPath, JSON.stringify(hist, null, 2) + "\n", "utf8");
+        ok++;
+        done++;
+        process.stdout.write(`  [${done}/${total}] ${ticker} → ${hist.bars.length} bars\n`);
+      } catch (e) {
+        const msg = (e as Error).message;
+        failures.push({ ticker, error: msg });
+        done++;
+        process.stdout.write(`  [${done}/${total}] ${ticker} FAILED: ${msg}\n`);
+      }
     }
   }
+
+  await Promise.all(Array.from({ length: concurrency }, () => worker()));
 
   console.log(`\nDone. ok=${ok} skipped=${skipped} failed=${failures.length}`);
   if (failures.length) {
