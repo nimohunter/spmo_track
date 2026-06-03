@@ -1,24 +1,8 @@
 {
   "ticker": "HSIC",
   "source": "https://query2.finance.yahoo.com/v8/finance/chart/HSIC?range=2y&interval=1d&events=history",
-  "fetchedAt": "2026-05-27T07:48:52.440Z",
+  "fetchedAt": "2026-06-03T08:30:28.074Z",
   "bars": [
-    {
-      "date": "2024-05-28",
-      "close": 71.150002
-    },
-    {
-      "date": "2024-05-29",
-      "close": 70.139999
-    },
-    {
-      "date": "2024-05-30",
-      "close": 69.25
-    },
-    {
-      "date": "2024-05-31",
-      "close": 69.339996
-    },
     {
       "date": "2024-06-03",
       "close": 69.68
@@ -2002,6 +1986,26 @@
     {
       "date": "2026-05-26",
       "close": 73.900002
+    },
+    {
+      "date": "2026-05-27",
+      "close": 75.669998
+    },
+    {
+      "date": "2026-05-28",
+      "close": 76.32
+    },
+    {
+      "date": "2026-05-29",
+      "close": 76.580002
+    },
+    {
+      "date": "2026-06-01",
+      "close": 76.400002
+    },
+    {
+      "date": "2026-06-02",
+      "close": 76.040001
     }
   ]
 }

@@ -1,24 +1,8 @@
 {
   "ticker": "FTNT",
   "source": "https://query2.finance.yahoo.com/v8/finance/chart/FTNT?range=2y&interval=1d&events=history",
-  "fetchedAt": "2026-05-27T07:48:34.944Z",
+  "fetchedAt": "2026-06-03T08:30:10.506Z",
   "bars": [
-    {
-      "date": "2024-05-28",
-      "close": 59.450001
-    },
-    {
-      "date": "2024-05-29",
-      "close": 59.73
-    },
-    {
-      "date": "2024-05-30",
-      "close": 58
-    },
-    {
-      "date": "2024-05-31",
-      "close": 59.32
-    },
     {
       "date": "2024-06-03",
       "close": 58.799999
@@ -2002,6 +1986,26 @@
     {
       "date": "2026-05-26",
       "close": 133.960007
+    },
+    {
+      "date": "2026-05-27",
+      "close": 127.93
+    },
+    {
+      "date": "2026-05-28",
+      "close": 129.699997
+    },
+    {
+      "date": "2026-05-29",
+      "close": 137.970001
+    },
+    {
+      "date": "2026-06-01",
+      "close": 147.139999
+    },
+    {
+      "date": "2026-06-02",
+      "close": 148.860001
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "ticker": "SNDK",
   "source": "https://query2.finance.yahoo.com/v8/finance/chart/SNDK?range=2y&interval=1d&events=history",
-  "fetchedAt": "2026-05-27T07:50:31.654Z",
+  "fetchedAt": "2026-06-03T08:33:22.781Z",
   "bars": [
     {
       "date": "2025-02-13",
@@ -1286,6 +1286,26 @@
     {
       "date": "2026-05-26",
       "close": 1589.550049
+    },
+    {
+      "date": "2026-05-27",
+      "close": 1589.939941
+    },
+    {
+      "date": "2026-05-28",
+      "close": 1641.640015
+    },
+    {
+      "date": "2026-05-29",
+      "close": 1694.97998
+    },
+    {
+      "date": "2026-06-01",
+      "close": 1761.430054
+    },
+    {
+      "date": "2026-06-02",
+      "close": 1716.359985
     }
   ]
 }

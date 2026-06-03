@@ -1,24 +1,8 @@
 {
   "ticker": "CNC",
   "source": "https://query2.finance.yahoo.com/v8/finance/chart/CNC?range=2y&interval=1d&events=history",
-  "fetchedAt": "2026-05-27T07:47:42.052Z",
+  "fetchedAt": "2026-06-03T08:27:18.261Z",
   "bars": [
-    {
-      "date": "2024-05-28",
-      "close": 72.720001
-    },
-    {
-      "date": "2024-05-29",
-      "close": 70.5
-    },
-    {
-      "date": "2024-05-30",
-      "close": 68.959999
-    },
-    {
-      "date": "2024-05-31",
-      "close": 71.589996
-    },
     {
       "date": "2024-06-03",
       "close": 71.129997
@@ -2002,6 +1986,26 @@
     {
       "date": "2026-05-26",
       "close": 57.209999
+    },
+    {
+      "date": "2026-05-27",
+      "close": 58.82
+    },
+    {
+      "date": "2026-05-28",
+      "close": 58.91
+    },
+    {
+      "date": "2026-05-29",
+      "close": 59.599998
+    },
+    {
+      "date": "2026-06-01",
+      "close": 62
+    },
+    {
+      "date": "2026-06-02",
+      "close": 59.990002
     }
   ]
 }
