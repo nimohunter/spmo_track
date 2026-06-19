@@ -12,3 +12,10 @@ export function formatUsd(n: number): string {
 export function formatPct(n: number, digits = 2): string {
   return `${n.toFixed(digits)}%`;
 }
+
+// Small per-share dollar amounts where cents matter (vs. formatUsd's $/K/M/B).
+export function formatPerShare(n: number): string {
+  const sign = n < 0 ? "-" : "";
+  const a = Math.abs(n);
+  return `${sign}$${a.toFixed(a < 1 ? 3 : 2)}`;
+}

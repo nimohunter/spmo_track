@@ -1,7 +1,7 @@
 import Link from "next/link";
 import GainsTable from "@/components/GainsTable";
 import { computeRebalanceGains } from "@/lib/gains";
-import { formatUsd } from "@/lib/format";
+import { formatUsd, formatPerShare } from "@/lib/format";
 
 export const dynamic = "force-static";
 
@@ -60,6 +60,44 @@ export default async function GainsPage() {
           gain/loss = fraction of the position sold × (market value − cost value).
         </p>
       </div>
+
+      {report.perShareNet != null && (
+        <div className="card">
+          <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>Per SPMO share</h2>
+          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+            <Stat
+              label="Net realized gain/loss / share"
+              value={formatPerShare(report.perShareNet)}
+              tone={report.perShareNet >= 0 ? "pos" : "neg"}
+              sub={`${report.navRealizedPct.toFixed(2)}% of NAV`}
+            />
+            {report.perShareGains != null && (
+              <Stat label="Gains / share" value={formatPerShare(report.perShareGains)} tone="pos" />
+            )}
+            {report.perShareLosses != null && (
+              <Stat
+                label="Losses / share"
+                value={formatPerShare(report.perShareLosses)}
+                tone="neg"
+              />
+            )}
+            <Stat
+              label="SPMO price (NAV proxy)"
+              value={report.spmoPrice != null ? `$${report.spmoPrice.toFixed(2)}` : "—"}
+              sub={`close ${report.priceDate}`}
+            />
+          </div>
+          <p style={{ margin: "16px 0 0", color: "var(--muted)", fontSize: 13 }}>
+            The net realized gain spread across the fund&apos;s shares: each SPMO share you hold
+            would carry about {formatPerShare(report.perShareNet)} of distributable capital gain
+            ({report.navRealizedPct.toFixed(2)}% of NAV). Positions were set on {report.costBasisDate}{" "}
+            (held under a year), so a distribution would be short-term — taxed as ordinary income.
+            Your bill ≈ {formatPerShare(report.perShareNet)} × shares you hold × your marginal rate.
+            Per-share figures are an estimate (net realized gain ÷ estimated shares outstanding =
+            fund value ÷ SPMO price).
+          </p>
+        </div>
+      )}
 
       <div className="card">
         <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>Positions sold at rebalance</h2>

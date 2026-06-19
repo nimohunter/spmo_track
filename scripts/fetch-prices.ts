@@ -145,7 +145,9 @@ function parseArgs(argv: string[]): {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const list = JSON.parse(await readFile(SP500_PATH, "utf8")) as SP500List;
-  let targets = list.constituents.map((c) => c.ticker);
+  // Include SPMO itself — its close is the fund's per-share NAV proxy, used to
+  // express realized rebalance gains on a per-share (per-investor) basis.
+  let targets = [...list.constituents.map((c) => c.ticker), "SPMO"];
   if (args.only) targets = targets.filter((t) => args.only!.includes(t));
   if (args.limit) targets = targets.slice(0, args.limit);
 

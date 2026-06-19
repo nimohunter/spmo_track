@@ -56,6 +56,11 @@ export type GainsReport = {
   priceDate: string; // most recent close used as "today"
   costBasisDate: string; // reconstitution date used as entry price
   portfolioValue: number; // market value of the held book at today's prices
+  spmoPrice: number | null; // SPMO's own close — per-share NAV proxy
+  navRealizedPct: number; // net realized gain as a % of fund NAV
+  perShareNet: number | null; // net realized gain attributable to one SPMO share
+  perShareGains: number | null; // realized gains per SPMO share
+  perShareLosses: number | null; // realized losses per SPMO share (≤ 0)
   totalRealizedGain: number;
   totalGains: number; // sum of positive realized gains
   totalLosses: number; // sum of negative realized gains (≤ 0)
@@ -211,12 +216,31 @@ export async function computeRebalanceGains(asOf?: string): Promise<GainsReport 
   // Biggest realized gain first; the client table can re-sort by any column.
   rows.sort((a, b) => b.realizedGain - a.realizedGain);
 
+  // Per-share view: SPMO's own close is the per-share NAV, so realized gains
+  // scale straight to "$ per share you hold" — shares outstanding cancel:
+  //   perShare = (realizedGain / portfolioValue) × navPerShare
+  let spmoPrice: number | null = null;
+  const spmoPath = join(DATA_DIR, "prices", "SPMO.json");
+  if (existsSync(spmoPath)) {
+    const ph = JSON.parse(await readFile(spmoPath, "utf8")) as PriceHistory;
+    const bar = ph.bars.findLast((b) => b.date <= priceDate) ?? ph.bars.at(-1);
+    spmoPrice = bar?.close ?? null;
+  }
+  const navRealizedPct = portfolioValue > 0 ? (totalRealizedGain / portfolioValue) * 100 : 0;
+  const perShare = (amount: number): number | null =>
+    spmoPrice != null && portfolioValue > 0 ? (amount / portfolioValue) * spmoPrice : null;
+
   return {
     asOfDate: effectiveAsOf,
     snapshotDate: snap.asOfDate,
     priceDate,
     costBasisDate,
     portfolioValue,
+    spmoPrice,
+    navRealizedPct,
+    perShareNet: perShare(totalRealizedGain),
+    perShareGains: perShare(totalGains),
+    perShareLosses: perShare(totalLosses),
     totalRealizedGain,
     totalGains,
     totalLosses,
