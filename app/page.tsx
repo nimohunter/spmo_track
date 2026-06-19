@@ -116,6 +116,9 @@ function Nav() {
       <Link href="/ranking" style={{ color: "var(--accent)" }}>
         Monthly ranking →
       </Link>
+      <Link href="/gains" style={{ color: "var(--accent)" }}>
+        Rebalance gains →
+      </Link>
     </nav>
   );
 }
