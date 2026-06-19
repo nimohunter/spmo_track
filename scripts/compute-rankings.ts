@@ -16,6 +16,7 @@ import {
   computeUniverseScores,
   momentumValue,
 } from "../lib/momentum.js";
+import { SHARE_CLASS_GROUPS, type ShareClassGroup } from "../lib/equivalents.js";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SCRIPT_DIR, "..");
@@ -131,8 +132,26 @@ async function main(): Promise<void> {
     ? (await readJson<MarketCapFile>(MCAP_PATH)).caps
     : {};
 
-  type Row = { ticker: string; name: string; sector: string; raw: number; mv: number; sigmaDaily: number };
+  type Row = {
+    ticker: string;
+    name: string;
+    sector: string;
+    raw: number;
+    mv: number;
+    sigmaDaily: number;
+    members?: string[];
+    displayTicker?: string;
+    displayName?: string;
+  };
+  const memberToGroup = new Map<string, ShareClassGroup>();
+  for (const g of SHARE_CLASS_GROUPS) for (const m of g.members) memberToGroup.set(m, g);
+
   const rows: Row[] = [];
+  // Dual-class names (GOOGL+GOOG, BRK.A+BRK.B) are one economic entity but appear as
+  // two S&P constituents, and stockanalysis.com reports the whole-company market cap
+  // for *each* class — so leaving them separate double-counts the company in both the
+  // z-score universe and the mcap weighting. Collapse each group to one row.
+  const groupBuckets = new Map<ShareClassGroup, Row[]>();
   let missing = 0;
   let badData = 0;
 
@@ -148,14 +167,43 @@ async function main(): Promise<void> {
       badData++;
       continue;
     }
-    rows.push({
+    const row: Row = {
       ticker: c.ticker,
       name: c.name,
       sector: c.sector,
       raw: mv.rawScore,
       mv: mv.mv,
       sigmaDaily: mv.sigmaDaily,
-    });
+    };
+    const group = memberToGroup.get(c.ticker);
+    if (group) {
+      if (!groupBuckets.has(group)) groupBuckets.set(group, []);
+      groupBuckets.get(group)!.push(row);
+    } else {
+      rows.push(row);
+    }
+  }
+
+  // Emit one row per dual-class group. With ≥2 classes present, keep the primary
+  // (first in the group's member order) but relabel it as the combined entity and
+  // record all members so SPMO's per-class weights can be summed back together.
+  // The primary's underlying ticker stays in `ticker` so price/mcap lookups resolve.
+  for (const [group, bucket] of groupBuckets) {
+    if (bucket.length === 0) continue;
+    bucket.sort(
+      (a, b) => group.members.indexOf(a.ticker) - group.members.indexOf(b.ticker),
+    );
+    const primary = bucket[0];
+    if (bucket.length === 1) {
+      rows.push(primary); // only one class in the index — treat as a normal stock
+    } else {
+      rows.push({
+        ...primary,
+        members: group.members,
+        displayTicker: group.combinedTicker,
+        displayName: group.combinedName,
+      });
+    }
   }
 
   if (rows.length < 100) {
@@ -179,22 +227,30 @@ async function main(): Promise<void> {
   }
 
   const entries: RankEntry[] = scored.map((r, i) => {
-    const key = normaliseTicker(r.ticker);
-    const currentWeight = spmo.weights.get(key) ?? null;
+    // For a combined entity, sum SPMO's per-class weights and treat it as held if
+    // any class is held. Plain stocks have a single member (their own ticker).
+    const members = r.members ?? [r.ticker];
+    let currentWeight: number | null = null;
+    for (const m of members) {
+      const w = spmo.weights.get(normaliseTicker(m));
+      if (w != null) currentWeight = (currentWeight ?? 0) + w;
+    }
+    if (currentWeight != null) currentWeight = Number(currentWeight.toFixed(4));
+    const inSpmo = members.some((m) => spmoTickers.has(normaliseTicker(m)));
     const expectedWeight =
       i < expectedWeights.length ? Number((expectedWeights[i] * 100).toFixed(4)) : null;
-    const marketCap = mcaps[r.ticker] ?? null;
+    const marketCap = mcaps[r.ticker] ?? null; // r.ticker is the underlying primary symbol
     return {
       rank: i + 1,
-      ticker: r.ticker,
-      name: r.name,
+      ticker: r.displayTicker ?? r.ticker,
+      name: r.displayName ?? r.name,
       sector: r.sector,
       mv: Number(r.mv.toFixed(6)),
       sigmaDaily: Number(r.sigmaDaily.toFixed(6)),
       rawScore: Number(r.raw.toFixed(6)),
       z: Number(r.z.toFixed(4)),
       scoreMul: Number(r.scoreMul.toFixed(4)),
-      inSpmo: spmoTickers.has(key),
+      inSpmo,
       currentWeight,
       expectedWeight,
       marketCap,

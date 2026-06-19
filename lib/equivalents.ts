@@ -17,6 +17,16 @@ export const SHARE_CLASS_GROUPS: ShareClassGroup[] = [
     combinedName: "Berkshire Hathaway (Class A + B combined)",
     members: ["BRK.A", "BRK.B"],
   },
+  {
+    combinedTicker: "FOX+A",
+    combinedName: "Fox Corporation (Class A + B combined)",
+    members: ["FOXA", "FOX"],
+  },
+  {
+    combinedTicker: "NWS+A",
+    combinedName: "News Corp (Class A + B combined)",
+    members: ["NWSA", "NWS"],
+  },
 ];
 
 export function combineShareClasses(holdings: Holding[]): Holding[] {
