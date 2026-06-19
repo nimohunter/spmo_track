@@ -29,6 +29,19 @@ export const SHARE_CLASS_GROUPS: ShareClassGroup[] = [
   },
 ];
 
+// Companies that changed their ticker symbol. SPMO's holdings feed can keep
+// reporting the old symbol after a rename, while our S&P 500 universe (sourced
+// from Wikipedia) already uses the new one — so the two never reconcile and the
+// name looks both "dropped" (gains) and "added" (ranking) at once. Map the old
+// symbol to the current one to link them. Keyed old → current.
+export const TICKER_ALIASES: Record<string, string> = {
+  BK: "BNY", // BNY Mellon renamed BK → BNY
+};
+
+export function canonicalTicker(ticker: string): string {
+  return TICKER_ALIASES[ticker] ?? ticker;
+}
+
 export function combineShareClasses(holdings: Holding[]): Holding[] {
   const memberToGroup = new Map<string, ShareClassGroup>();
   for (const g of SHARE_CLASS_GROUPS) {

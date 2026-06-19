@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { MonthlyRanking, PriceHistory, Snapshot } from "./types";
-import { SHARE_CLASS_GROUPS, type ShareClassGroup } from "./equivalents";
+import { SHARE_CLASS_GROUPS, type ShareClassGroup, canonicalTicker } from "./equivalents";
 import { loadIndex, loadSnapshot, loadRankingIndex, loadRanking } from "./data";
 
 const DATA_DIR = join(process.cwd(), "data");
@@ -106,11 +106,12 @@ export async function computeRebalanceGains(asOf?: string): Promise<GainsReport 
   type Entity = { key: string; name: string; members: { ticker: string; shares: number }[] };
   const entities = new Map<string, Entity>();
   for (const h of snap.holdings) {
-    const group = memberToGroup.get(h.ticker);
-    const key = group ? group.combinedTicker : h.ticker;
+    const symbol = canonicalTicker(h.ticker); // resolve renamed tickers (e.g. BK → BNY)
+    const group = memberToGroup.get(symbol);
+    const key = group ? group.combinedTicker : symbol;
     const name = group ? group.combinedName : h.name;
     if (!entities.has(key)) entities.set(key, { key, name, members: [] });
-    entities.get(key)!.members.push({ ticker: h.ticker, shares: h.shares ?? 0 });
+    entities.get(key)!.members.push({ ticker: symbol, shares: h.shares ?? 0 });
   }
 
   // Load every member's price history once.

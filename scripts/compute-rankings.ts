@@ -16,7 +16,7 @@ import {
   computeUniverseScores,
   momentumValue,
 } from "../lib/momentum.js";
-import { SHARE_CLASS_GROUPS, type ShareClassGroup } from "../lib/equivalents.js";
+import { SHARE_CLASS_GROUPS, type ShareClassGroup, canonicalTicker } from "../lib/equivalents.js";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SCRIPT_DIR, "..");
@@ -92,21 +92,21 @@ async function loadSpmoReference(asOf: string): Promise<SpmoRef> {
     partial !== null && (full === null || partial.asOfDate > full.asOfDate);
   if (full) {
     for (const h of full.holdings) {
-      const key = normaliseTicker(h.ticker);
+      const key = normaliseTicker(canonicalTicker(h.ticker));
       tickers.add(key);
       if (!usePartialAsPrimary) weights.set(key, h.weight);
     }
   }
   if (partial && usePartialAsPrimary) {
     for (const h of partial.holdings) {
-      const key = normaliseTicker(h.ticker);
+      const key = normaliseTicker(canonicalTicker(h.ticker));
       tickers.add(key);
       weights.set(key, h.weight);
     }
     // Anything in the older full snapshot we don't have a fresher weight for: keep the old weight as best-available
     if (full) {
       for (const h of full.holdings) {
-        const key = normaliseTicker(h.ticker);
+        const key = normaliseTicker(canonicalTicker(h.ticker));
         if (!weights.has(key)) weights.set(key, h.weight);
       }
     }

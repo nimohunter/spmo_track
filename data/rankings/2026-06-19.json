@@ -1,6 +1,6 @@
 {
   "asOfDate": "2026-06-19",
-  "computedAt": "2026-06-19T01:42:19.597Z",
+  "computedAt": "2026-06-19T04:43:00.994Z",
   "universeSize": 498,
   "topN": 100,
   "entries": [
@@ -344,8 +344,8 @@
       "rawScore": 64.414713,
       "z": 1.2528,
       "scoreMul": 2.2528,
-      "inSpmo": false,
-      "currentWeight": null,
+      "inSpmo": true,
+      "currentWeight": 0.49,
       "expectedWeight": 0.5112,
       "marketCap": 98580000000
     },
@@ -7481,7 +7481,6 @@
     "VRT",
     "WBD",
     "SATS",
-    "BNY",
     "KEYS",
     "FDX",
     "CFG",
