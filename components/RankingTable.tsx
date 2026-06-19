@@ -5,6 +5,46 @@ import type { RankEntry } from "@/lib/types";
 
 type Filter = "all" | "inSpmo" | "adds" | "drops";
 
+type SortKey =
+  | "rank"
+  | "ticker"
+  | "name"
+  | "sector"
+  | "marketCap"
+  | "mv"
+  | "z"
+  | "scoreMul"
+  | "currentWeight"
+  | "expectedWeight"
+  | "delta";
+
+type SortDir = "asc" | "desc";
+
+// Comparable value per sort key. null/NaN are sorted last regardless of direction.
+function sortValue(e: RankEntry, key: SortKey): number | string | null {
+  switch (key) {
+    case "ticker":
+      return e.ticker;
+    case "name":
+      return e.name;
+    case "sector":
+      return e.sector;
+    case "delta":
+      return e.expectedWeight == null || e.currentWeight == null
+        ? null
+        : e.expectedWeight - e.currentWeight;
+    default:
+      return e[key];
+  }
+}
+
+// Click order: string/rank columns ascend first; numeric metrics descend first.
+function defaultDir(key: SortKey): SortDir {
+  return key === "rank" || key === "ticker" || key === "name" || key === "sector"
+    ? "asc"
+    : "desc";
+}
+
 type Props = {
   entries: RankEntry[];
   topN: number;
@@ -13,6 +53,17 @@ type Props = {
 export default function RankingTable({ entries, topN }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("rank");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  function toggleSort(key: SortKey) {
+    if (key === sortKey) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(defaultDir(key));
+    }
+  }
 
   const rows = useMemo(() => {
     let r = entries;
@@ -25,8 +76,45 @@ export default function RankingTable({ entries, topN }: Props) {
         (e) => e.ticker.toLowerCase().includes(q) || e.name.toLowerCase().includes(q),
       );
     }
-    return r;
-  }, [entries, filter, query, topN]);
+
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...r].sort((a, b) => {
+      const va = sortValue(a, sortKey);
+      const vb = sortValue(b, sortKey);
+      const na = va == null || (typeof va === "number" && Number.isNaN(va));
+      const nb = vb == null || (typeof vb === "number" && Number.isNaN(vb));
+      if (na || nb) return na === nb ? 0 : na ? 1 : -1; // nulls always last
+      if (typeof va === "string" && typeof vb === "string") {
+        return va.localeCompare(vb) * dir;
+      }
+      return ((va as number) - (vb as number)) * dir;
+    });
+  }, [entries, filter, query, topN, sortKey, sortDir]);
+
+  function SortableTh({
+    label,
+    sortKey: key,
+    num,
+  }: {
+    label: string;
+    sortKey: SortKey;
+    num?: boolean;
+  }) {
+    const active = sortKey === key;
+    return (
+      <th
+        className={num ? "num" : undefined}
+        onClick={() => toggleSort(key)}
+        style={{ cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+        title="Click to sort"
+      >
+        {label}
+        <span style={{ marginLeft: 4, color: active ? "var(--accent)" : "var(--border)" }}>
+          {active ? (sortDir === "asc" ? "▲" : "▼") : "↕"}
+        </span>
+      </th>
+    );
+  }
 
   return (
     <div>
@@ -70,17 +158,17 @@ export default function RankingTable({ entries, topN }: Props) {
         <table>
           <thead style={{ position: "sticky", top: 0, background: "#fff", zIndex: 1 }}>
             <tr>
-              <th>#</th>
-              <th>Ticker</th>
-              <th>Name</th>
-              <th>Sector</th>
-              <th className="num">Mcap</th>
-              <th className="num">MV (12m)</th>
-              <th className="num">Z</th>
-              <th className="num">Score×</th>
-              <th className="num">Current %</th>
-              <th className="num">Expected %</th>
-              <th className="num">Δ</th>
+              <SortableTh label="#" sortKey="rank" />
+              <SortableTh label="Ticker" sortKey="ticker" />
+              <SortableTh label="Name" sortKey="name" />
+              <SortableTh label="Sector" sortKey="sector" />
+              <SortableTh label="Mcap" sortKey="marketCap" num />
+              <SortableTh label="MV (12m)" sortKey="mv" num />
+              <SortableTh label="Z" sortKey="z" num />
+              <SortableTh label="Score×" sortKey="scoreMul" num />
+              <SortableTh label="Current %" sortKey="currentWeight" num />
+              <SortableTh label="Expected %" sortKey="expectedWeight" num />
+              <SortableTh label="Δ" sortKey="delta" num />
               <th>Status</th>
             </tr>
           </thead>
