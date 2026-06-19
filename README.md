@@ -1,9 +1,10 @@
 # SPMO Tracker
 
-Two views on the Invesco S&P 500 Momentum ETF (SPMO):
+Three views on the Invesco S&P 500 Momentum ETF (SPMO):
 
 1. **`/`** — actual holdings over time. Top 20 weight changes between rebalances, full distribution per snapshot, and a delta vs. previous filing.
 2. **`/ranking`** — *simulated* S&P 500 Momentum ranking computed from scratch over the entire S&P 500 universe, with predicted constituent adds/drops and per-stock expected weight if SPMO rebalanced today.
+3. **`/gains`** — *estimated* capital gains/losses SPMO would realize if it reconstituted today: drops sold in full, overweight names trimmed to target. Per-position and fund-level totals, plus the net gain expressed per SPMO share (an investor's tax-distribution proxy).
 
 Static Next.js site rendered at build time; data lives in this repo as JSON and gets refreshed by GitHub Actions.
 
@@ -20,6 +21,19 @@ For each stock in the current S&P 500:
 
 The top 100 by score multiplier are the predicted SPMO constituents. Diff against actual SPMO holdings to get "predicted adds" and "predicted drops."
 
+## How rebalance gains are computed
+
+The `/gains` page estimates what SPMO would *realize* if the index reconstituted today:
+
+1. **Current book** = the latest full holdings snapshot (≥50 names, with share counts). Partial top-25 snapshots are skipped — they'd undercount the sells.
+2. **Cost basis** = each name's close on the prior reconstitution (the most recent 3rd Friday of March/September), i.e. where the book was last set.
+3. **Today's value** = shares × latest close. Fund value (≈ AUM) = sum across the book.
+4. **Target weight** comes from the ranking's `expectedWeight`; predicted drops target 0%.
+5. A name is **sold** when its current value exceeds its target value. **Realized gain/loss** = `fraction sold × (market value − cost value)` — a full sale for drops, partial for trims. Buys/increases realize nothing and don't appear.
+6. **Per-share** = `(net realized gain / fund value) × SPMO's own close` — shares outstanding cancel, so it needs no separate share-count source. Positions set at the last March/September rebalance are held under a year, so a distribution would be short-term (ordinary income).
+
+This is a model, not SPMO's books: real ETFs blunt most of these gains via in-kind redemption, and cost basis is approximated as the last reconstitution rather than true per-lot basis.
+
 ## Rebalance calendar
 
 SPMO follows the S&P 500 Momentum Index, which **rebalances at the close of the 3rd Friday of March and September**. Constituents don't change between rebalances (only weights drift with prices).
@@ -34,7 +48,7 @@ NPORT filings happen quarterly (Feb / May / Aug / Nov), but only the **May 31** 
 | SPMO actual holdings (top 25, daily) | `stockanalysis.com/api` | scheduled GH Action |
 | SPMO historical holdings (full ~100, quarterly) | SEC NPORT filings via EDGAR | one-time backfill |
 | S&P 500 constituents | Wikipedia | manual / on demand |
-| Daily prices (2y adjusted closes) | Yahoo Finance chart API | manual / on demand |
+| Daily prices (2y adjusted closes, all ~500 names + SPMO itself) | Yahoo Finance chart API | manual / on demand |
 | Market caps | `stockanalysis.com/api` | manual / on demand |
 
 ## Local development
@@ -134,14 +148,18 @@ The `fetch-holdings.yml` cron also commits to `main`, which then triggers `deplo
 app/
   page.tsx                  Top 20 chart, distribution, latest-holdings table
   ranking/page.tsx          Full S&P 500 momentum ranking + predicted rebalance
+  gains/page.tsx            Estimated rebalance capital gains, fund + per-share
 components/
   WeightChart.tsx           Recharts line chart with isolate-on-legend-click
   SnapshotDistribution.tsx  Per-date weight bar chart
   RankingTable.tsx          Sortable/filterable 500-row table (client)
+  GainsTable.tsx            Sortable/filterable sells table (drops/trims, client)
 lib/
   data.ts                   Snapshot + ranking loaders; rebalance-period filter
   momentum.ts               MV / σ / score / iterative weight-capping algorithm
-  equivalents.ts            Combine GOOG+GOOGL, BRK.A+BRK.B
+  gains.ts                  Rebalance realized-gain calculator (fund + per-share)
+  equivalents.ts            Combine GOOG+GOOGL, BRK.A+BRK.B; renamed-ticker aliases (BK→BNY)
+  format.ts                 Shared USD / percent / per-share formatters
   types.ts                  Shared types
 scripts/
   fetch-holdings.ts         SPMO top-25 daily snapshot (stockanalysis.com)
@@ -171,3 +189,4 @@ data/
 - **Invesco daily CSV is manual.** Their CDN blocks non-US IPs (geo-block at Fastly edge). If you have a US-IP CI environment or VPN, automation is possible.
 - **Mid-rebalance daily Invesco snapshots are treated as post-rebalance constituents** by the chart filter — the earliest snapshot per rebalance period wins. Once the official May 31 / Nov 30 NPORT lands, it'll be excluded because the earlier Invesco daily already covers the same constituent set.
 - **Score returns will diverge slightly from S&P's own numbers** because we use Yahoo's adjusted close (split + dividend) without S&P's exact total-return methodology, and we don't model the exact rebalance day's prices.
+- **Renamed tickers are reconciled via an alias map** in `lib/equivalents.ts` (`TICKER_ALIASES`, e.g. `BK → BNY`). SPMO's holdings feed can lag a ticker change while the S&P 500 list (Wikipedia) uses the new symbol; without the alias the same name shows as both a predicted add (ranking) and a phantom drop (gains). Add new renames there.
