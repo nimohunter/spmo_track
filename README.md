@@ -71,6 +71,47 @@ Invesco's site is geo-blocked for non-US IPs, so the CSV is fetched manually:
 2. Drop the file into `data/holdings/` (any filename matching `invesco*.csv`).
 3. Run `npm run import:invesco`. It parses the `# as of YYYY-MM-DD` line and writes `data/holdings/YYYY-MM-DD.json` in the standard `Snapshot` shape, updating `data/index.json`.
 
+## Updating the data
+
+There are two independent things you can refresh. Pick the one that matches what you want.
+
+### "What should SPMO hold right now?" (the `/ranking` page)
+
+Re-run the ranking pipeline end to end. From the repo root, in order:
+
+```bash
+npm run fetch:sp500       # refresh the S&P 500 constituent list (Wikipedia) → data/sp500.json
+npm run fetch:prices      # ~2 min — 2y daily closes for all ~500 names (Yahoo) → data/prices/*.json
+npm run fetch:mcaps       # ~2 min — market caps for all ~500 names → data/marketcaps.json
+npm run compute:rankings  # runs the momentum algorithm → data/rankings/YYYY-MM-DD.json (today)
+```
+
+The first three fetch fresh inputs; `compute:rankings` runs the scoring + weighting pipeline over them
+and writes a new dated file in `data/rankings/` (also updating `data/rankings-index.json`). The top 100
+by score are the predicted SPMO constituents. To backtest a past date instead of today:
+
+```bash
+npm run compute:rankings -- --as-of 2025-09-21
+```
+
+> **Note:** `fetch:prices` shells out to `curl` against Yahoo's unofficial API, which occasionally
+> rate-limits. If it fails partway, just re-run it — already-fetched tickers are cached.
+
+### "What does SPMO actually hold?" (the `/` page)
+
+- Daily top-25 snapshot runs automatically via the `fetch-holdings.yml` cron, or manually with `npm run fetch`.
+- Full monthly holdings come from the Invesco CSV — see [Refreshing the Invesco holdings](#refreshing-the-invesco-holdings) above.
+
+### Publishing the update
+
+Commit the regenerated JSON and push to `main`; the `deploy.yml` workflow rebuilds and redeploys the site.
+
+```bash
+git add data/
+git commit -m "data: refresh prices + mcaps, recompute ranking for YYYY-MM-DD"
+git push
+```
+
 ## Deploying
 
 This repo auto-deploys to Vercel on every push to `main` via `.github/workflows/deploy.yml`.

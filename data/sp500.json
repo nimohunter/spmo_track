@@ -1,7 +1,7 @@
 {
-  "asOfDate": "2026-05-12",
+  "asOfDate": "2026-06-19",
   "source": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-  "fetchedAt": "2026-05-12T05:13:38.836Z",
+  "fetchedAt": "2026-06-19T01:16:13.166Z",
   "constituents": [
     {
       "ticker": "A",
@@ -309,11 +309,6 @@
       "sector": "Health Care"
     },
     {
-      "ticker": "BK",
-      "name": "BNY Mellon",
-      "sector": "Financials"
-    },
-    {
       "ticker": "BKNG",
       "name": "Booking Holdings",
       "sector": "Consumer Discretionary"
@@ -337,6 +332,11 @@
       "ticker": "BMY",
       "name": "Bristol Myers Squibb",
       "sector": "Health Care"
+    },
+    {
+      "ticker": "BNY",
+      "name": "BNY Mellon",
+      "sector": "Financials"
     },
     {
       "ticker": "BR",
@@ -829,11 +829,6 @@
       "sector": "Energy"
     },
     {
-      "ticker": "EPAM",
-      "name": "EPAM Systems",
-      "sector": "Information Technology"
-    },
-    {
       "ticker": "EQIX",
       "name": "Equinix",
       "sector": "Real Estate"
@@ -936,6 +931,11 @@
     {
       "ticker": "FDX",
       "name": "FedEx",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FDXF",
+      "name": "FedEx Freight",
       "sector": "Industrials"
     },
     {
