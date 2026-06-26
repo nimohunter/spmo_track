@@ -64,6 +64,21 @@ export function postRebalanceSnapshotDates(allDates: string[]): Set<string> {
   return markers;
 }
 
+// Latest holdings snapshot that is a full constituent list (≥50 names), on or
+// before asOf (defaults to the newest). Partial top-25 daily snapshots are
+// skipped — they don't represent the whole book.
+export async function loadLatestFullSnapshot(asOf?: string): Promise<Snapshot | null> {
+  const idx = await loadIndex();
+  const candidates = idx.snapshots
+    .filter((s) => !asOf || s.date <= asOf)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  for (const c of candidates) {
+    const snap = await loadSnapshot(c.file);
+    if (snap.holdings.length >= 50) return snap;
+  }
+  return null;
+}
+
 export async function loadAllSnapshots(): Promise<Snapshot[]> {
   const index = await loadIndex();
   const markers = postRebalanceSnapshotDates(index.snapshots.map((s) => s.date));

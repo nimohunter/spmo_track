@@ -1,0 +1,39 @@
+{
+  "source": "Seeking Alpha Quant — Steven Cress, \"Top 10 Stocks for the Year\"",
+  "lists": [
+    {
+      "year": 2025,
+      "selectedOn": "2025-01-09",
+      "sourceUrl": "https://seekingalpha.com/article/4745362-top-10-stocks-for-2025",
+      "picks": [
+        { "ticker": "OPFI", "name": "OppFi" },
+        { "ticker": "PYPL", "name": "PayPal" },
+        { "ticker": "EAT", "name": "Brinker International" },
+        { "ticker": "LRN", "name": "Stride" },
+        { "ticker": "URBN", "name": "Urban Outfitters" },
+        { "ticker": "AGX", "name": "Argan" },
+        { "ticker": "DXPE", "name": "DXP Enterprises" },
+        { "ticker": "CLS", "name": "Celestica" },
+        { "ticker": "INTA", "name": "Intapp" },
+        { "ticker": "CRDO", "name": "Credo Technology" }
+      ]
+    },
+    {
+      "year": 2026,
+      "selectedOn": "2026-01-08",
+      "sourceUrl": "https://seekingalpha.com/article/4856608-top-10-stocks-for-2026",
+      "picks": [
+        { "ticker": "MU", "name": "Micron Technology" },
+        { "ticker": "AMD", "name": "Advanced Micro Devices" },
+        { "ticker": "COHR", "name": "Coherent" },
+        { "ticker": "CIEN", "name": "Ciena" },
+        { "ticker": "ATI", "name": "ATI Inc." },
+        { "ticker": "CLS", "name": "Celestica" },
+        { "ticker": "ALL", "name": "Allstate" },
+        { "ticker": "INCY", "name": "Incyte" },
+        { "ticker": "B", "name": "Barrick Mining" },
+        { "ticker": "WLDN", "name": "Willdan Group" }
+      ]
+    }
+  ]
+}

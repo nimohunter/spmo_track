@@ -102,6 +102,9 @@ function Nav() {
       <Link href="/gains" style={{ color: "var(--accent)" }}>
         Rebalance gains →
       </Link>
+      <Link href="/compare" style={{ color: "var(--accent)" }}>
+        Seeking Alpha →
+      </Link>
     </nav>
   );
 }

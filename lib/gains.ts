@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { MonthlyRanking, PriceHistory, Snapshot } from "./types";
+import type { MonthlyRanking, PriceHistory } from "./types";
 import { SHARE_CLASS_GROUPS, type ShareClassGroup, canonicalTicker } from "./equivalents";
-import { loadIndex, loadSnapshot, loadRankingIndex, loadRanking } from "./data";
+import { loadLatestFullSnapshot, loadRankingIndex, loadRanking } from "./data";
 
 const DATA_DIR = join(process.cwd(), "data");
 
@@ -71,20 +71,6 @@ export type GainsReport = {
   rows: GainRow[];
   skipped: string[]; // held names missing price data
 };
-
-// Latest holdings snapshot that is a full constituent list (partial top-25
-// snapshots don't represent the whole book, so they'd undercount the sells).
-async function loadLatestFullSnapshot(asOf: string): Promise<Snapshot | null> {
-  const idx = await loadIndex();
-  const candidates = idx.snapshots
-    .filter((s) => s.date <= asOf)
-    .sort((a, b) => b.date.localeCompare(a.date));
-  for (const c of candidates) {
-    const snap = await loadSnapshot(c.file); // raw, per-class shares (not collapsed)
-    if (snap.holdings.length >= 50) return snap;
-  }
-  return null;
-}
 
 export async function computeRebalanceGains(asOf?: string): Promise<GainsReport | null> {
   const rankingIndex = await loadRankingIndex();
