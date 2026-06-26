@@ -1,5 +1,9 @@
 import Link from "next/link";
-import { loadSeekingAlphaComparison, type ComparedPick, type ComparedYear } from "@/lib/compare";
+import {
+  loadSeekingAlphaComparison,
+  type ComparedPick,
+  type ComparedYear,
+} from "@/lib/compare";
 
 export const dynamic = "force-static";
 
@@ -12,13 +16,14 @@ export default async function ComparePage() {
         <Nav />
         <h1>Seeking Alpha vs SPMO</h1>
         <div className="card">
-          <p>No ranking on file yet — run <code>npm run compute:rankings</code>.</p>
+          <p>No comparison data on file.</p>
         </div>
       </main>
     );
   }
 
   const [first, last] = [report.years[0], report.years[report.years.length - 1]];
+  const strong = report.strongMomentumPct;
 
   return (
     <main>
@@ -26,32 +31,46 @@ export default async function ComparePage() {
       <h1>Seeking Alpha vs SPMO</h1>
       <p className="subtitle">
         Do Seeking Alpha&apos;s Quant &quot;Top 10 Stocks for the Year&quot; (Steven Cress) overlap with
-        SPMO&apos;s pond? SPMO can only hold <strong>S&amp;P 500</strong> names and selects by
-        risk-adjusted <strong>momentum</strong>; SA Quant screens the whole market on a multi-factor
-        (GARP) model. Eligibility &amp; momentum rank as of {report.rankingDate}; SPMO holdings as of{" "}
-        {report.snapshotDate}.
+        SPMO? SPMO can only hold <strong>S&amp;P 500</strong> names and selects purely by{" "}
+        <strong>momentum</strong>. Each pick is scored by SPMO&apos;s momentum formula{" "}
+        <em>as of the day SA chose it</em> — so the 2025 list is judged on 2024 data. SPMO holdings as
+        of {report.snapshotDate}.
       </p>
 
       {first && last && first.year !== last.year && (
         <div className="card">
-          <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>The overlap moved a lot year to year</h2>
+          <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>
+            Same momentum instinct — different pond
+          </h2>
           <div style={{ display: "flex", gap: 32, flexWrap: "wrap", alignItems: "center" }}>
-            <Swing label="In S&P 500 (eligible)" a={first} b={last} field="eligibleCount" />
+            <Swing
+              label={`Strong momentum at pick (≥${strong.toFixed(0)}%)`}
+              a={first}
+              b={last}
+              field="strongMomentumCount"
+            />
+            <Swing label="In S&P 500 (SPMO-eligible)" a={first} b={last} field="eligibleCount" />
             <Swing label="Held by SPMO" a={first} b={last} field="heldCount" />
-            <Swing label="In momentum top 100" a={first} b={last} field="topNCount" />
           </div>
           <p style={{ margin: "16px 0 0", color: "var(--muted)", fontSize: 13 }}>
-            The swing tracks SA&apos;s cap-size tilt: {first.year}&apos;s picks leaned small/mid-cap
-            (outside SPMO&apos;s universe), while {last.year}&apos;s leaned large-cap AI/semis — exactly
-            SPMO&apos;s wheelhouse. When SA fishes in large-caps, the lists converge; when it fishes in
-            small-caps, they barely touch.
+            Both years SA picks are <strong>momentum-heavy</strong> ({first.strongMomentumCount}/
+            {first.total} and {last.strongMomentumCount}/{last.total} cleared {strong.toFixed(0)}% trailing
+            momentum) — so the lists don&apos;t differ on momentum. What swings is{" "}
+            <strong>eligibility</strong>: {first.year} leaned small/mid-cap (outside SPMO&apos;s S&amp;P 500
+            universe, {first.eligibleCount}/{first.total} eligible), while {last.year} leaned large-cap
+            AI/semis ({last.eligibleCount}/{last.total}). SPMO can only own the momentum winners that
+            happen to be in the S&amp;P 500.
           </p>
         </div>
       )}
 
       {report.years.map((y) => (
-        <YearTable key={y.year} year={y} topN={report.topN} />
+        <YearTable key={y.year} year={y} strong={strong} />
       ))}
+
+      {report.momentumNote && (
+        <p style={{ color: "var(--muted)", fontSize: 12 }}>{report.momentumNote}</p>
+      )}
     </main>
   );
 }
@@ -65,7 +84,7 @@ function Swing({
   label: string;
   a: ComparedYear;
   b: ComparedYear;
-  field: "eligibleCount" | "heldCount" | "topNCount";
+  field: "eligibleCount" | "heldCount" | "strongMomentumCount";
 }) {
   return (
     <div>
@@ -81,11 +100,11 @@ function Swing({
       </div>
       <div style={{ fontSize: 24, fontWeight: 600 }}>
         <span style={{ color: "var(--muted)" }}>
-          {countFor(a, field)}/{a.total}
+          {a[field]}/{a.total}
         </span>
         <span style={{ color: "var(--muted)", margin: "0 8px" }}>→</span>
         <span style={{ color: "var(--accent)" }}>
-          {countFor(b, field)}/{b.total}
+          {b[field]}/{b.total}
         </span>
       </div>
       <div style={{ fontSize: 12, color: "var(--muted)" }}>
@@ -95,11 +114,7 @@ function Swing({
   );
 }
 
-function countFor(y: ComparedYear, field: "eligibleCount" | "heldCount" | "topNCount"): number {
-  return y[field];
-}
-
-function YearTable({ year, topN }: { year: ComparedYear; topN: number }) {
+function YearTable({ year, strong }: { year: ComparedYear; strong: number }) {
   return (
     <div className="card">
       <h2 style={{ margin: "0 0 4px", fontSize: 18 }}>
@@ -109,9 +124,18 @@ function YearTable({ year, topN }: { year: ComparedYear; topN: number }) {
         </span>
       </h2>
       <p style={{ margin: "0 0 12px", color: "var(--muted)", fontSize: 13 }}>
-        <strong>{year.eligibleCount}/{year.total}</strong> in the S&amp;P 500 ·{" "}
-        <strong>{year.heldCount}/{year.total}</strong> held by SPMO ·{" "}
-        <strong>{year.topNCount}/{year.total}</strong> in the momentum top {topN}
+        <strong>
+          {year.strongMomentumCount}/{year.total}
+        </strong>{" "}
+        strong momentum at pick ·{" "}
+        <strong>
+          {year.eligibleCount}/{year.total}
+        </strong>{" "}
+        in the S&amp;P 500 ·{" "}
+        <strong>
+          {year.heldCount}/{year.total}
+        </strong>{" "}
+        held by SPMO
       </p>
       <div style={{ overflowX: "auto" }}>
         <table>
@@ -119,15 +143,15 @@ function YearTable({ year, topN }: { year: ComparedYear; topN: number }) {
             <tr>
               <th>Ticker</th>
               <th>Company</th>
+              <th style={{ textAlign: "right" }}>Momentum @ pick</th>
               <th>S&amp;P 500?</th>
               <th style={{ textAlign: "right" }}>SPMO weight</th>
-              <th style={{ textAlign: "right" }}>Momentum rank</th>
               <th>Verdict</th>
             </tr>
           </thead>
           <tbody>
             {year.picks.map((p) => (
-              <Row key={p.ticker} p={p} topN={topN} />
+              <Row key={p.ticker} p={p} strong={strong} />
             ))}
           </tbody>
         </table>
@@ -136,27 +160,28 @@ function YearTable({ year, topN }: { year: ComparedYear; topN: number }) {
   );
 }
 
-function Row({ p, topN }: { p: ComparedPick; topN: number }) {
+function Row({ p, strong }: { p: ComparedPick; strong: number }) {
+  const momPct = p.mom12m != null ? p.mom12m * 100 : null;
+  const momStrong = momPct != null && momPct >= strong;
   return (
     <tr>
       <td style={{ fontWeight: 600 }}>{p.ticker}</td>
       <td style={{ color: "var(--muted)" }}>{p.name}</td>
+      <td
+        style={{
+          textAlign: "right",
+          color: momPct == null ? "var(--muted)" : momStrong ? "#16a34a" : "var(--fg)",
+          fontWeight: momStrong ? 600 : 400,
+        }}
+      >
+        {momPct == null ? "—" : `${momPct >= 0 ? "+" : ""}${momPct.toFixed(0)}%`}
+      </td>
       <td>{p.inSp500 ? "✓" : <span style={{ color: "var(--muted)" }}>—</span>}</td>
       <td style={{ textAlign: "right" }}>
         {p.spmoWeight != null ? (
           `${p.spmoWeight.toFixed(2)}%`
         ) : (
           <span style={{ color: "var(--muted)" }}>—</span>
-        )}
-      </td>
-      <td style={{ textAlign: "right" }}>
-        {p.momentumRank != null ? (
-          <span style={{ color: p.inMomentumTopN ? "#16a34a" : "var(--fg)" }}>
-            #{p.momentumRank}
-            {p.inMomentumTopN ? ` (top ${topN})` : ""}
-          </span>
-        ) : (
-          <span style={{ color: "var(--muted)" }}>not in universe</span>
         )}
       </td>
       <td>
@@ -169,8 +194,7 @@ function Row({ p, topN }: { p: ComparedPick; topN: number }) {
 function Verdict({ status }: { status: ComparedPick["status"] }) {
   const map = {
     held: { bg: "#dcfce7", fg: "#166534", text: "held by SPMO" },
-    add: { bg: "#dbeafe", fg: "#1e40af", text: "likely add" },
-    eligible: { bg: "#fef9c3", fg: "#854d0e", text: "eligible, low momentum" },
+    eligible: { bg: "#fef9c3", fg: "#854d0e", text: "in S&P 500, not held" },
     ineligible: { bg: "#f3f4f6", fg: "#6b7280", text: "not in S&P 500" },
   } as const;
   const s = map[status];

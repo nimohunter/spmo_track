@@ -1,21 +1,22 @@
 {
   "source": "Seeking Alpha Quant — Steven Cress, \"Top 10 Stocks for the Year\"",
+  "momentumNote": "mom12m = SPMO's Momentum Value (price 2mo ago / price 14mo ago - 1) computed as of each list's selectedOn date, from Yahoo 5y adjusted closes. It measures whether the pick was a momentum stock when SA chose it (2024 data for the 2025 list).",
   "lists": [
     {
       "year": 2025,
       "selectedOn": "2025-01-09",
       "sourceUrl": "https://seekingalpha.com/article/4745362-top-10-stocks-for-2025",
       "picks": [
-        { "ticker": "OPFI", "name": "OppFi" },
-        { "ticker": "PYPL", "name": "PayPal" },
-        { "ticker": "EAT", "name": "Brinker International" },
-        { "ticker": "LRN", "name": "Stride" },
-        { "ticker": "URBN", "name": "Urban Outfitters" },
-        { "ticker": "AGX", "name": "Argan" },
-        { "ticker": "DXPE", "name": "DXP Enterprises" },
-        { "ticker": "CLS", "name": "Celestica" },
-        { "ticker": "INTA", "name": "Intapp" },
-        { "ticker": "CRDO", "name": "Credo Technology" }
+        { "ticker": "OPFI", "name": "OppFi", "mom12m": 1.8481 },
+        { "ticker": "PYPL", "name": "PayPal", "mom12m": 0.5293 },
+        { "ticker": "EAT", "name": "Brinker International", "mom12m": 2.4039 },
+        { "ticker": "LRN", "name": "Stride", "mom12m": 0.7937 },
+        { "ticker": "URBN", "name": "Urban Outfitters", "mom12m": 0.0805 },
+        { "ticker": "AGX", "name": "Argan", "mom12m": 2.5899 },
+        { "ticker": "DXPE", "name": "DXP Enterprises", "mom12m": 1.2767 },
+        { "ticker": "CLS", "name": "Celestica", "mom12m": 2.5112 },
+        { "ticker": "INTA", "name": "Intapp", "mom12m": 0.5867 },
+        { "ticker": "CRDO", "name": "Credo Technology", "mom12m": 2.1894 }
       ]
     },
     {
@@ -23,16 +24,16 @@
       "selectedOn": "2026-01-08",
       "sourceUrl": "https://seekingalpha.com/article/4856608-top-10-stocks-for-2026",
       "picks": [
-        { "ticker": "MU", "name": "Micron Technology" },
-        { "ticker": "AMD", "name": "Advanced Micro Devices" },
-        { "ticker": "COHR", "name": "Coherent" },
-        { "ticker": "CIEN", "name": "Ciena" },
-        { "ticker": "ATI", "name": "ATI Inc." },
-        { "ticker": "CLS", "name": "Celestica" },
-        { "ticker": "ALL", "name": "Allstate" },
-        { "ticker": "INCY", "name": "Incyte" },
-        { "ticker": "B", "name": "Barrick Mining" },
-        { "ticker": "WLDN", "name": "Willdan Group" }
+        { "ticker": "MU", "name": "Micron Technology", "mom12m": 1.1351 },
+        { "ticker": "AMD", "name": "Advanced Micro Devices", "mom12m": 0.5785 },
+        { "ticker": "COHR", "name": "Coherent", "mom12m": 0.4044 },
+        { "ticker": "CIEN", "name": "Ciena", "mom12m": 1.771 },
+        { "ticker": "ATI", "name": "ATI Inc.", "mom12m": 0.6752 },
+        { "ticker": "CLS", "name": "Celestica", "mom12m": 2.7519 },
+        { "ticker": "ALL", "name": "Allstate", "mom12m": 0.0472 },
+        { "ticker": "INCY", "name": "Incyte", "mom12m": 0.271 },
+        { "ticker": "B", "name": "Barrick Mining", "mom12m": 0.839 },
+        { "ticker": "WLDN", "name": "Willdan Group", "mom12m": 1.0767 }
       ]
     }
   ]
