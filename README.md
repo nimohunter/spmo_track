@@ -1,10 +1,11 @@
 # SPMO Tracker
 
-Three views on the Invesco S&P 500 Momentum ETF (SPMO):
+Four views on the Invesco S&P 500 Momentum ETF (SPMO):
 
 1. **`/`** — actual holdings over time. Top 20 weight changes between rebalances, full distribution per snapshot, and a delta vs. previous filing.
 2. **`/ranking`** — *simulated* S&P 500 Momentum ranking computed from scratch over the entire S&P 500 universe, with predicted constituent adds/drops and per-stock expected weight if SPMO rebalanced today.
 3. **`/gains`** — *estimated* capital gains/losses SPMO would realize if it reconstituted today: drops sold in full, overweight names trimmed to target. Per-position and fund-level totals, plus the net gain expressed per SPMO share (an investor's tax-distribution proxy).
+4. **`/compare`** — Seeking Alpha Quant's annual "Top 10 Stocks" (Steven Cress) vs SPMO. Scores each pick by SPMO's momentum formula *as of the day SA chose it*, alongside S&P 500 eligibility and whether SPMO holds it — showing that the overlap swings on universe (cap size), not momentum.
 
 Static Next.js site rendered at build time; data lives in this repo as JSON and gets refreshed by GitHub Actions.
 
@@ -33,6 +34,18 @@ The `/gains` page estimates what SPMO would *realize* if the index reconstituted
 6. **Per-share** = `(net realized gain / fund value) × SPMO's own close` — shares outstanding cancel, so it needs no separate share-count source. Positions set at the last March/September rebalance are held under a year, so a distribution would be short-term (ordinary income).
 
 This is a model, not SPMO's books: real ETFs blunt most of these gains via in-kind redemption, and cost basis is approximated as the last reconstitution rather than true per-lot basis.
+
+## Seeking Alpha comparison (`/compare`)
+
+`data/seeking-alpha.json` holds Seeking Alpha Quant's annual "Top 10 Stocks" lists. For each pick the page asks whether it overlaps SPMO's world:
+
+1. **`mom12m`** — SPMO's Momentum Value (`price(M-2) / price(M-14) - 1`) computed **as of each list's `selectedOn` date**, baked into the JSON. This judges a pick on the data SA had when choosing it (the 2025 list is scored on 2024 prices), not on today's momentum.
+2. **S&P 500 eligibility** — checked against the current `sp500.json`; SPMO can only ever hold S&P 500 names.
+3. **Held by SPMO** — looked up in the latest full holdings snapshot (current).
+
+Finding: SA's picks are momentum-heavy every year, so the lists don't differ on momentum — what swings the overlap is **cap-size / universe**. 2025 leaned small/mid-cap (1/10 in the S&P 500); 2026 leaned large-cap AI/semis (6/10 eligible, 3 already held).
+
+`mom12m` is precomputed from Yahoo 5-year adjusted closes (the standard 2y fetch doesn't reach 14 months before a Jan-2025 pick). Since a past date's momentum never changes, the values are baked into the JSON rather than recomputed at build time — no extra price files are kept for the non-S&P picks.
 
 ## Rebalance calendar
 
@@ -149,15 +162,17 @@ app/
   page.tsx                  Top 20 chart, distribution, latest-holdings table
   ranking/page.tsx          Full S&P 500 momentum ranking + predicted rebalance
   gains/page.tsx            Estimated rebalance capital gains, fund + per-share
+  compare/page.tsx          Seeking Alpha Top 10 vs SPMO (eligibility + momentum @ pick)
 components/
   WeightChart.tsx           Recharts line chart with isolate-on-legend-click
   SnapshotDistribution.tsx  Per-date weight bar chart
   RankingTable.tsx          Sortable/filterable 500-row table (client)
   GainsTable.tsx            Sortable/filterable sells table (drops/trims, client)
 lib/
-  data.ts                   Snapshot + ranking loaders; rebalance-period filter
+  data.ts                   Snapshot + ranking loaders; latest-full-snapshot; rebalance-period filter
   momentum.ts               MV / σ / score / iterative weight-capping algorithm
   gains.ts                  Rebalance realized-gain calculator (fund + per-share)
+  compare.ts                Join SA picks to S&P 500 membership + SPMO holdings
   equivalents.ts            Combine GOOG+GOOGL, BRK.A+BRK.B; renamed-ticker aliases (BK→BNY)
   format.ts                 Shared USD / percent / per-share formatters
   types.ts                  Shared types
@@ -177,6 +192,7 @@ data/
   rankings-index.json       Ranking manifest
   sp500.json                Current S&P 500 constituent list
   marketcaps.json           Per-ticker market caps
+  seeking-alpha.json        SA Quant "Top 10" lists + momentum @ pick date
 .github/workflows/
   fetch-holdings.yml        Scheduled fetch + commit
   deploy.yml                Build + deploy to Vercel on every push to main
