@@ -1,7 +1,7 @@
 {
-  "asOfDate": "2026-06-19",
+  "asOfDate": "2026-09-03",
   "source": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-  "fetchedAt": "2026-06-19T01:16:13.166Z",
+  "fetchedAt": "2026-09-03T01:09:53.287Z",
   "constituents": [
     {
       "ticker": "A",
@@ -201,7 +201,7 @@
     {
       "ticker": "APP",
       "name": "AppLovin",
-      "sector": "Information Technology"
+      "sector": "Communication Services"
     },
     {
       "ticker": "APTV",
@@ -222,11 +222,6 @@
       "ticker": "ATO",
       "name": "Atmos Energy",
       "sector": "Utilities"
-    },
-    {
-      "ticker": "AVB",
-      "name": "AvalonBay Communities",
-      "sector": "Real Estate"
     },
     {
       "ticker": "AVGO",
@@ -372,11 +367,6 @@
       "ticker": "C",
       "name": "Citigroup",
       "sector": "Financials"
-    },
-    {
-      "ticker": "CAG",
-      "name": "Conagra Brands",
-      "sector": "Consumer Staples"
     },
     {
       "ticker": "CAH",
@@ -564,11 +554,6 @@
       "sector": "Financials"
     },
     {
-      "ticker": "CPB",
-      "name": "Campbell's Company (The)",
-      "sector": "Consumer Staples"
-    },
-    {
       "ticker": "CPRT",
       "name": "Copart",
       "sector": "Industrials"
@@ -661,7 +646,7 @@
     {
       "ticker": "DD",
       "name": "DuPont",
-      "sector": "Materials"
+      "sector": "Industrials"
     },
     {
       "ticker": "DDOG",
@@ -769,14 +754,14 @@
       "sector": "Health Care"
     },
     {
-      "ticker": "EA",
-      "name": "Electronic Arts",
-      "sector": "Communication Services"
-    },
-    {
       "ticker": "EBAY",
       "name": "eBay Inc.",
       "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ECHO",
+      "name": "EchoStar",
+      "sector": "Communication Services"
     },
     {
       "ticker": "ECL",
@@ -831,11 +816,6 @@
     {
       "ticker": "EQIX",
       "name": "Equinix",
-      "sector": "Real Estate"
-    },
-    {
-      "ticker": "EQR",
-      "name": "Equity Residential",
       "sector": "Real Estate"
     },
     {
@@ -944,6 +924,11 @@
       "sector": "Utilities"
     },
     {
+      "ticker": "FERG",
+      "name": "Ferguson Enterprises",
+      "sector": "Industrials"
+    },
+    {
       "ticker": "FFIV",
       "name": "F5, Inc.",
       "sector": "Information Technology"
@@ -972,6 +957,11 @@
       "ticker": "FIX",
       "name": "Comfort Systems USA",
       "sector": "Industrials"
+    },
+    {
+      "ticker": "FLEX",
+      "name": "Flex Ltd.",
+      "sector": "Information Technology"
     },
     {
       "ticker": "FOX",
@@ -1140,7 +1130,12 @@
     },
     {
       "ticker": "HON",
-      "name": "Honeywell",
+      "name": "Honeywell Technologies",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "HONA",
+      "name": "Honeywell Aerospace",
       "sector": "Industrials"
     },
     {
@@ -1589,13 +1584,18 @@
       "sector": "Financials"
     },
     {
+      "ticker": "MRVL",
+      "name": "Marvell Technology",
+      "sector": "Information Technology"
+    },
+    {
       "ticker": "MS",
       "name": "Morgan Stanley",
       "sector": "Financials"
     },
     {
       "ticker": "MSCI",
-      "name": "MSCI Inc.",
+      "name": "MSCI",
       "sector": "Financials"
     },
     {
@@ -1755,7 +1755,7 @@
     },
     {
       "ticker": "ORLY",
-      "name": "O’Reilly Automotive",
+      "name": "O'Reilly Automotive",
       "sector": "Consumer Discretionary"
     },
     {
@@ -1869,11 +1869,6 @@
       "sector": "Health Care"
     },
     {
-      "ticker": "POOL",
-      "name": "Pool Corporation",
-      "sector": "Consumer Discretionary"
-    },
-    {
       "ticker": "PPG",
       "name": "PPG Industries",
       "sector": "Materials"
@@ -1934,6 +1929,11 @@
       "sector": "Consumer Discretionary"
     },
     {
+      "ticker": "RDDT",
+      "name": "Reddit",
+      "sector": "Communication Services"
+    },
+    {
       "ticker": "REG",
       "name": "Regency Centers",
       "sector": "Real Estate"
@@ -1960,7 +1960,7 @@
     },
     {
       "ticker": "RMD",
-      "name": "ResMed",
+      "name": "ResMed|",
       "sector": "Health Care"
     },
     {
@@ -1997,11 +1997,6 @@
       "ticker": "RVTY",
       "name": "Revvity",
       "sector": "Health Care"
-    },
-    {
-      "ticker": "SATS",
-      "name": "EchoStar",
-      "sector": "Communication Services"
     },
     {
       "ticker": "SBAC",
@@ -2352,6 +2347,11 @@
       "ticker": "VMC",
       "name": "Vulcan Materials Company",
       "sector": "Materials"
+    },
+    {
+      "ticker": "VMRK",
+      "name": "Vivmark Residential",
+      "sector": "Real Estate"
     },
     {
       "ticker": "VRSK",

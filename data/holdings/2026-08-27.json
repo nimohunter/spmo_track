@@ -1,0 +1,183 @@
+{
+  "ticker": "SPMO",
+  "asOfDate": "2026-08-27",
+  "fetchedAt": "2026-09-03T01:12:47.997Z",
+  "source": "https://stockanalysis.com/etf/spmo/holdings/__data.json",
+  "holdings": [
+    {
+      "rank": 1,
+      "ticker": "MU",
+      "name": "Micron Technology, Inc.",
+      "weight": 10.46,
+      "shares": 2495217
+    },
+    {
+      "rank": 2,
+      "ticker": "NVDA",
+      "name": "NVIDIA Corporation",
+      "weight": 9.24,
+      "shares": 9048831
+    },
+    {
+      "rank": 3,
+      "ticker": "AVGO",
+      "name": "Broadcom Inc.",
+      "weight": 6.38,
+      "shares": 3831875
+    },
+    {
+      "rank": 4,
+      "ticker": "JNJ",
+      "name": "Johnson & Johnson",
+      "weight": 4.6,
+      "shares": 3861420
+    },
+    {
+      "rank": 5,
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc.",
+      "weight": 4.36,
+      "shares": 2856103
+    },
+    {
+      "rank": 6,
+      "ticker": "AMD",
+      "name": "Advanced Micro Devices, Inc.",
+      "weight": 3.87,
+      "shares": 1813025
+    },
+    {
+      "rank": 7,
+      "ticker": "LRCX",
+      "name": "Lam Research Corporation",
+      "weight": 3.58,
+      "shares": 2510821
+    },
+    {
+      "rank": 8,
+      "ticker": "GOOG",
+      "name": "Alphabet Inc.",
+      "weight": 3.46,
+      "shares": 2288130
+    },
+    {
+      "rank": 9,
+      "ticker": "XOM",
+      "name": "ExxonMobil Holdings Corporation",
+      "weight": 3.03,
+      "shares": 4322154
+    },
+    {
+      "rank": 10,
+      "ticker": "CAT",
+      "name": "Caterpillar Inc.",
+      "weight": 2.46,
+      "shares": 671736
+    },
+    {
+      "rank": 11,
+      "ticker": "INTC",
+      "name": "Intel Corporation",
+      "weight": 2.4,
+      "shares": 5817283
+    },
+    {
+      "rank": 12,
+      "ticker": "SNDK",
+      "name": "Sandisk Corporation",
+      "weight": 2.18,
+      "shares": 328065
+    },
+    {
+      "rank": 13,
+      "ticker": "AMAT",
+      "name": "Applied Materials, Inc.",
+      "weight": 1.92,
+      "shares": 889455
+    },
+    {
+      "rank": 14,
+      "ticker": "CSCO",
+      "name": "Cisco Systems, Inc.",
+      "weight": 1.9,
+      "shares": 3787357
+    },
+    {
+      "rank": 15,
+      "ticker": "STX",
+      "name": "Seagate Technology Holdings plc",
+      "weight": 1.83,
+      "shares": 482867
+    },
+    {
+      "rank": 16,
+      "ticker": "GE",
+      "name": "GE Aerospace",
+      "weight": 1.75,
+      "shares": 1140931
+    },
+    {
+      "rank": 17,
+      "ticker": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "weight": 1.67,
+      "shares": 2003517
+    },
+    {
+      "rank": 18,
+      "ticker": "RTX",
+      "name": "RTX Corporation",
+      "weight": 1.67,
+      "shares": 1755606
+    },
+    {
+      "rank": 19,
+      "ticker": "WDC",
+      "name": "Western Digital Corporation",
+      "weight": 1.56,
+      "shares": 751621
+    },
+    {
+      "rank": 20,
+      "ticker": "GS",
+      "name": "The Goldman Sachs Group, Inc.",
+      "weight": 1.47,
+      "shares": 314290
+    },
+    {
+      "rank": 21,
+      "ticker": "APH",
+      "name": "Amphenol Corporation",
+      "weight": 1.43,
+      "shares": 1971887
+    },
+    {
+      "rank": 22,
+      "ticker": "PM",
+      "name": "Philip Morris International Inc.",
+      "weight": 1.41,
+      "shares": 1648512
+    },
+    {
+      "rank": 23,
+      "ticker": "KO",
+      "name": "The Coca-Cola Company",
+      "weight": 1.38,
+      "shares": 3460192
+    },
+    {
+      "rank": 24,
+      "ticker": "KLAC",
+      "name": "KLA Corporation",
+      "weight": 1.35,
+      "shares": 1633759
+    },
+    {
+      "rank": 25,
+      "ticker": "NEM",
+      "name": "Newmont Corporation",
+      "weight": 1.34,
+      "shares": 2253236
+    }
+  ]
+}
