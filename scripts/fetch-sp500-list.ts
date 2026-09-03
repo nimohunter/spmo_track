@@ -34,7 +34,7 @@ function extractTable(html: string): string {
 
 function parseRows(tableHtml: string): SP500Entry[] {
   const out: SP500Entry[] = [];
-  const rowRe = /<tr>([\s\S]*?)<\/tr>/g;
+  const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/g;
   let m: RegExpExecArray | null;
   while ((m = rowRe.exec(tableHtml))) {
     const cells = Array.from(m[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)).map((x) =>

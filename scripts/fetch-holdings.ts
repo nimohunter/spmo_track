@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 import type { Holding, Snapshot, SnapshotIndex } from "../lib/types.ts";
 
 const TICKER = "SPMO";
-const SOURCE_URL = `https://stockanalysis.com/api/symbol/e/${TICKER}/holdings`;
+// stockanalysis.com dropped the /api/symbol JSON endpoint (2026-09); the holdings
+// table now ships in the page's SvelteKit data payload, devalue-serialized.
+const SOURCE_URL = `https://stockanalysis.com/etf/${TICKER.toLowerCase()}/holdings/__data.json`;
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SCRIPT_DIR, "..");
 const HOLDINGS_DIR = join(ROOT, "data", "holdings");
@@ -19,10 +21,37 @@ type RawHolding = {
   sh: string;
 };
 
-type RawResponse = {
-  date?: string;
-  data?: { holdings?: RawHolding[] };
+type SvelteKitData = {
+  nodes?: Array<{ data?: unknown[] } | null>;
 };
+
+// Hydrate one value from a SvelteKit/devalue flat array: objects and arrays
+// hold indices into the array; primitives are leaves.
+function hydrate(arr: unknown[], idx: number): unknown {
+  const v = arr[idx];
+  if (Array.isArray(v)) return v.map((i) => hydrate(arr, i as number));
+  if (v && typeof v === "object") {
+    return Object.fromEntries(
+      Object.entries(v).map(([k, i]) => [k, hydrate(arr, i as number)]),
+    );
+  }
+  return v;
+}
+
+function extractPayload(json: SvelteKitData): { date?: string; holdings: RawHolding[] } {
+  for (const node of json.nodes ?? []) {
+    const data = node?.data;
+    if (!data || !Array.isArray(data)) continue;
+    const root = data[0];
+    if (!root || typeof root !== "object" || !("holdings" in root)) continue;
+    const rootObj = root as Record<string, number>;
+    const holdings = hydrate(data, rootObj.holdings) as RawHolding[];
+    const date =
+      "date" in rootObj ? (hydrate(data, rootObj.date) as string) : undefined;
+    return { date, holdings };
+  }
+  throw new Error("No holdings node in SvelteKit payload");
+}
 
 function parsePercent(value: string): number {
   const cleaned = value.replace(/[%\s,]/g, "");
@@ -42,7 +71,12 @@ function parseAsOfDate(raw: string | undefined): string {
   if (!raw) return new Date().toISOString().slice(0, 10);
   const d = new Date(raw);
   if (Number.isNaN(d.getTime())) throw new Error(`Bad as-of date: ${raw}`);
-  return d.toISOString().slice(0, 10);
+  // Format in local time: "Aug 27, 2026" parses as local midnight, and
+  // toISOString() would shift it back a day in timezones east of UTC.
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 function normalizeHoldings(raw: RawHolding[]): Holding[] {
@@ -65,12 +99,12 @@ async function fetchSnapshot(): Promise<Snapshot> {
     },
   });
   if (!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
-  const json = (await res.json()) as RawResponse;
-  const raw = json.data?.holdings;
+  const json = (await res.json()) as SvelteKitData;
+  const { date, holdings: raw } = extractPayload(json);
   if (!raw || raw.length === 0) throw new Error("No holdings in response");
   return {
     ticker: "SPMO",
-    asOfDate: parseAsOfDate(json.date),
+    asOfDate: parseAsOfDate(date),
     fetchedAt: new Date().toISOString(),
     source: SOURCE_URL,
     holdings: normalizeHoldings(raw),
