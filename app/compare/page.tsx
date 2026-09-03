@@ -137,6 +137,7 @@ function YearTable({ year, strong }: { year: ComparedYear; strong: number }) {
         </strong>{" "}
         held by SPMO
       </p>
+      {year.performance && <PerformanceStrip perf={year.performance} />}
       <div style={{ overflowX: "auto" }}>
         <table>
           <thead>
@@ -144,6 +145,7 @@ function YearTable({ year, strong }: { year: ComparedYear; strong: number }) {
               <th>Ticker</th>
               <th>Company</th>
               <th style={{ textAlign: "right" }}>Momentum @ pick</th>
+              <th style={{ textAlign: "right" }}>Since pick</th>
               <th>S&amp;P 500?</th>
               <th style={{ textAlign: "right" }}>SPMO weight</th>
               <th>Verdict</th>
@@ -176,6 +178,21 @@ function Row({ p, strong }: { p: ComparedPick; strong: number }) {
       >
         {momPct == null ? "—" : `${momPct >= 0 ? "+" : ""}${momPct.toFixed(0)}%`}
       </td>
+      <td
+        style={{
+          textAlign: "right",
+          color:
+            p.returnSincePick == null
+              ? "var(--muted)"
+              : p.returnSincePick >= 0
+                ? "#16a34a"
+                : "#dc2626",
+        }}
+      >
+        {p.returnSincePick == null
+          ? "—"
+          : `${p.returnSincePick >= 0 ? "+" : ""}${(p.returnSincePick * 100).toFixed(0)}%`}
+      </td>
       <td>{p.inSp500 ? "✓" : <span style={{ color: "var(--muted)" }}>—</span>}</td>
       <td style={{ textAlign: "right" }}>
         {p.spmoWeight != null ? (
@@ -188,6 +205,65 @@ function Row({ p, strong }: { p: ComparedPick; strong: number }) {
         <Verdict status={p.status} />
       </td>
     </tr>
+  );
+}
+
+function PerfStat({ label, value, hint }: { label: string; value: number; hint?: string }) {
+  const pct = value * 100;
+  return (
+    <div>
+      <div
+        style={{
+          fontSize: 12,
+          color: "var(--muted)",
+          textTransform: "uppercase",
+          letterSpacing: 0.04,
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: 24,
+          fontWeight: 600,
+          color: pct >= 0 ? "#16a34a" : "#dc2626",
+        }}
+      >
+        {pct >= 0 ? "+" : ""}
+        {pct.toFixed(1)}%
+      </div>
+      {hint && <div style={{ fontSize: 12, color: "var(--muted)" }}>{hint}</div>}
+    </div>
+  );
+}
+
+function PerformanceStrip({ perf }: { perf: NonNullable<ComparedYear["performance"]> }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        gap: 32,
+        flexWrap: "wrap",
+        alignItems: "center",
+        padding: "12px 16px",
+        background: "var(--card-inset, rgba(0,0,0,0.03))",
+        borderRadius: 8,
+        marginBottom: 12,
+      }}
+    >
+      <PerfStat label="SA picks, equal weight" value={perf.equalWeight} hint="10% in each pick" />
+      <PerfStat
+        label="SA picks, cap-weighted"
+        value={perf.capWeight}
+        hint="weights ∝ market cap at buy"
+      />
+      <PerfStat label="SPMO, same period" value={perf.spmo} hint="buy & hold the ETF" />
+      <div style={{ fontSize: 12, color: "var(--muted)", marginLeft: "auto" }}>
+        Bought at the {perf.from} close ({perf.pricedCount} picks priced),
+        <br />
+        held through {perf.through}. Adjusted closes — dividends included.
+      </div>
+    </div>
   );
 }
 

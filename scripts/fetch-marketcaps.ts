@@ -97,7 +97,16 @@ async function main(): Promise<void> {
     return;
   }
   const list = JSON.parse(await readFile(SP500_PATH, "utf8")) as SP500List;
-  let targets = list.constituents.map((c) => c.ticker);
+  // Include Seeking Alpha picks — /compare cap-weights their portfolio.
+  const saPath = join(ROOT, "data", "seeking-alpha.json");
+  const saPicks: string[] = existsSync(saPath)
+    ? (
+        JSON.parse(await readFile(saPath, "utf8")) as {
+          lists?: Array<{ picks?: Array<{ ticker: string }> }>;
+        }
+      ).lists?.flatMap((l) => (l.picks ?? []).map((p) => p.ticker)) ?? []
+    : [];
+  let targets = [...new Set([...list.constituents.map((c) => c.ticker), ...saPicks])];
   if (args.only) targets = targets.filter((t) => args.only!.includes(t));
   if (args.limit) targets = targets.slice(0, args.limit);
 

@@ -44,6 +44,17 @@ async function isFresh(path: string): Promise<boolean> {
   return ageHours < FRESH_HOURS;
 }
 
+// Seeking Alpha "Top 10" picks (data/seeking-alpha.json) — the /compare page
+// prices their performance since selection, so fetch them alongside the S&P.
+async function readSaPickTickers(): Promise<string[]> {
+  const path = join(ROOT, "data", "seeking-alpha.json");
+  if (!existsSync(path)) return [];
+  const sa = JSON.parse(await readFile(path, "utf8")) as {
+    lists?: Array<{ picks?: Array<{ ticker: string }> }>;
+  };
+  return (sa.lists ?? []).flatMap((l) => (l.picks ?? []).map((p) => p.ticker));
+}
+
 const HOSTS = ["query2.finance.yahoo.com", "query1.finance.yahoo.com"];
 
 // Node's fetch (undici) gets 429'd by Yahoo via TLS fingerprinting.
@@ -145,9 +156,12 @@ function parseArgs(argv: string[]): {
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const list = JSON.parse(await readFile(SP500_PATH, "utf8")) as SP500List;
+  const saPicks = await readSaPickTickers();
   // Include SPMO itself — its close is the fund's per-share NAV proxy, used to
   // express realized rebalance gains on a per-share (per-investor) basis.
-  let targets = [...list.constituents.map((c) => c.ticker), "SPMO"];
+  let targets = [
+    ...new Set([...list.constituents.map((c) => c.ticker), "SPMO", ...saPicks]),
+  ];
   if (args.only) targets = targets.filter((t) => args.only!.includes(t));
   if (args.limit) targets = targets.slice(0, args.limit);
 
