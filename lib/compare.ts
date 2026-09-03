@@ -43,6 +43,14 @@ export type YearPerformance = {
   capWeight: number; // weights ∝ market cap at buy date
   spmo: number; // SPMO over the same window
   pricedCount: number; // picks with price data (both portfolios use these)
+  series: PerformancePoint[]; // daily cumulative return of all three portfolios
+};
+
+export type PerformancePoint = {
+  date: string;
+  equal: number; // % return since buy
+  cap: number;
+  spmo: number;
 };
 
 export type ComparedYear = {
@@ -65,28 +73,34 @@ export type CompareReport = {
   years: ComparedYear[];
 };
 
-type PickQuote = {
-  buyDate: string;
-  buyPrice: number;
-  lastDate: string;
-  lastPrice: number;
-  ret: number;
-};
-
-async function loadPickQuote(ticker: string, selectedOn: string): Promise<PickQuote | null> {
+async function loadBars(ticker: string): Promise<PriceHistory["bars"] | null> {
   const file = join(DATA_DIR, "prices", ticker.replace(/[^A-Za-z0-9]+/g, "_") + ".json");
   if (!existsSync(file)) return null;
   const hist = JSON.parse(await readFile(file, "utf8")) as PriceHistory;
-  const buy = hist.bars.find((b) => b.date >= selectedOn);
-  const last = hist.bars[hist.bars.length - 1];
-  if (!buy || !last || buy.close <= 0 || last.date <= buy.date) return null;
-  return {
-    buyDate: buy.date,
-    buyPrice: buy.close,
-    lastDate: last.date,
-    lastPrice: last.close,
-    ret: last.close / buy.close - 1,
-  };
+  return hist.bars.length ? hist.bars : null;
+}
+
+// Growth factor (price / buy price) per axis date, forward-filling gaps so a
+// pick that didn't trade on a given day carries its last known price.
+function growthOnAxis(
+  bars: PriceHistory["bars"],
+  axis: string[],
+  selectedOn: string,
+): { buyPrice: number; lastPrice: number; growth: number[] } | null {
+  const buyIdx = bars.findIndex((b) => b.date >= selectedOn);
+  if (buyIdx < 0 || bars[buyIdx].close <= 0) return null;
+  const buyPrice = bars[buyIdx].close;
+  const growth: number[] = [];
+  let i = buyIdx;
+  let last = buyPrice;
+  for (const date of axis) {
+    while (i < bars.length && bars[i].date <= date) {
+      last = bars[i].close;
+      i++;
+    }
+    growth.push(last / buyPrice);
+  }
+  return { buyPrice, lastPrice: last, growth };
 }
 
 async function computePerformance(
@@ -95,38 +109,55 @@ async function computePerformance(
   mcaps: Record<string, number>,
 ): Promise<{ perf: YearPerformance | null; returns: Map<string, number> }> {
   const returns = new Map<string, number>();
-  const quotes: Array<{ ticker: string; q: PickQuote }> = [];
+  const spmoBars = await loadBars("SPMO");
+  if (!spmoBars) return { perf: null, returns };
+  const axis = spmoBars.filter((b) => b.date >= selectedOn).map((b) => b.date);
+  if (axis.length < 2) return { perf: null, returns };
+
+  const spmoG = growthOnAxis(spmoBars, axis, selectedOn);
+  if (!spmoG) return { perf: null, returns };
+
+  const held: Array<{ ticker: string; growth: number[]; mcapAtBuy: number | null }> = [];
   for (const p of picks) {
-    const q = await loadPickQuote(p.ticker, selectedOn);
-    if (q) {
-      quotes.push({ ticker: p.ticker, q });
-      returns.set(p.ticker, q.ret);
-    }
+    const bars = await loadBars(p.ticker);
+    const g = bars ? growthOnAxis(bars, axis, selectedOn) : null;
+    if (!g) continue;
+    returns.set(p.ticker, g.growth[g.growth.length - 1] - 1);
+    // Market cap at the buy date ≈ today's cap scaled back by the price ratio.
+    const mcapNow = mcaps[p.ticker];
+    held.push({
+      ticker: p.ticker,
+      growth: g.growth,
+      mcapAtBuy: mcapNow ? mcapNow * (g.buyPrice / g.lastPrice) : null,
+    });
   }
-  const spmoQ = await loadPickQuote("SPMO", selectedOn);
-  if (quotes.length === 0 || !spmoQ) return { perf: null, returns };
+  if (held.length === 0) return { perf: null, returns };
 
-  const equalWeight = quotes.reduce((a, x) => a + x.q.ret, 0) / quotes.length;
-
-  // Market cap at the buy date ≈ today's cap scaled back by the price ratio.
-  let capSum = 0;
-  let capRetSum = 0;
-  for (const { ticker, q } of quotes) {
-    const mcapNow = mcaps[ticker];
-    if (!mcapNow) continue;
-    const mcapAtBuy = mcapNow * (q.buyPrice / q.lastPrice);
-    capSum += mcapAtBuy;
-    capRetSum += mcapAtBuy * q.ret;
-  }
+  const capTotal = held.reduce((a, h) => a + (h.mcapAtBuy ?? 0), 0);
+  const series: PerformancePoint[] = axis.map((date, i) => {
+    const equal = held.reduce((a, h) => a + h.growth[i], 0) / held.length;
+    const cap =
+      capTotal > 0
+        ? held.reduce((a, h) => a + (h.mcapAtBuy ?? 0) * h.growth[i], 0) / capTotal
+        : equal;
+    return {
+      date,
+      equal: (equal - 1) * 100,
+      cap: (cap - 1) * 100,
+      spmo: (spmoG.growth[i] - 1) * 100,
+    };
+  });
+  const final = series[series.length - 1];
 
   return {
     perf: {
-      from: quotes[0].q.buyDate,
-      through: spmoQ.lastDate,
-      equalWeight,
-      capWeight: capSum > 0 ? capRetSum / capSum : equalWeight,
-      spmo: spmoQ.ret,
-      pricedCount: quotes.length,
+      from: axis[0],
+      through: final.date,
+      equalWeight: final.equal / 100,
+      capWeight: final.cap / 100,
+      spmo: final.spmo / 100,
+      pricedCount: held.length,
+      series,
     },
     returns,
   };

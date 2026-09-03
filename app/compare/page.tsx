@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ComparePerformanceChart from "@/components/ComparePerformanceChart";
 import {
   loadSeekingAlphaComparison,
   type ComparedPick,
@@ -138,6 +139,11 @@ function YearTable({ year, strong }: { year: ComparedYear; strong: number }) {
         held by SPMO
       </p>
       {year.performance && <PerformanceStrip perf={year.performance} />}
+      {year.performance && year.performance.series.length > 1 && (
+        <div style={{ marginBottom: 16 }}>
+          <ComparePerformanceChart series={year.performance.series} />
+        </div>
+      )}
       <div style={{ overflowX: "auto" }}>
         <table>
           <thead>
