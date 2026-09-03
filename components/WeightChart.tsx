@@ -64,14 +64,17 @@ export default function WeightChart({ tickers, series }: Props) {
       <ResponsiveContainer width="100%" height={500}>
         <LineChart data={series} margin={{ top: 16, right: 24, bottom: 16, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="date" />
+          <XAxis dataKey="rebalance" />
           <YAxis
             tickFormatter={(v: number) => `${v.toFixed(1)}%`}
             domain={["auto", "auto"]}
           />
           <Tooltip
             formatter={(v: number) => `${v.toFixed(2)}%`}
-            labelFormatter={(l: string) => `As of ${l}`}
+            labelFormatter={(l: string, payload) => {
+              const date = payload?.[0]?.payload?.date;
+              return date ? `${l} rebalance · weights as of ${date}` : l;
+            }}
           />
           <Legend onClick={handleLegendClick} wrapperStyle={{ cursor: "pointer" }} />
           {tickers.map((t, i) => {

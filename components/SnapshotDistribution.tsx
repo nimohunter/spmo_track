@@ -12,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import type { Holding } from "@/lib/types";
+import { rebalanceLabel } from "@/lib/rebalance";
 
 const TOP_N = 20;
 
@@ -60,7 +61,7 @@ export default function SnapshotDistribution({ snapshots }: Props) {
         }}
       >
         <label htmlFor="snap-date" style={{ fontSize: 13, color: "var(--muted)" }}>
-          Snapshot date:
+          Rebalance period:
         </label>
         <button
           type="button"
@@ -87,7 +88,7 @@ export default function SnapshotDistribution({ snapshots }: Props) {
         >
           {[...sorted].reverse().map((s) => (
             <option key={s.asOfDate} value={s.asOfDate}>
-              {s.asOfDate}
+              {rebalanceLabel(s.asOfDate)} (as of {s.asOfDate})
             </option>
           ))}
         </select>
@@ -101,7 +102,8 @@ export default function SnapshotDistribution({ snapshots }: Props) {
           →
         </button>
         <span style={{ fontSize: 13, color: "var(--muted)", marginLeft: "auto" }}>
-          Top {top.length} = {totalWeight.toFixed(1)}% of fund · {snap.holdings.length} total positions
+          Book set at the {rebalanceLabel(snap.asOfDate)} rebalance, weights as of {snap.asOfDate} ·
+          top {top.length} = {totalWeight.toFixed(1)}% of fund · {snap.holdings.length} total positions
         </span>
       </div>
 

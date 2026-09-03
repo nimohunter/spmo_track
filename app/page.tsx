@@ -2,6 +2,7 @@ import Link from "next/link";
 import WeightChart from "@/components/WeightChart";
 import SnapshotDistribution from "@/components/SnapshotDistribution";
 import { buildWeightSeries, loadAllSnapshots } from "@/lib/data";
+import { rebalanceLabel } from "@/lib/rebalance";
 import type { Snapshot } from "@/lib/types";
 
 export const dynamic = "force-static";
@@ -46,7 +47,8 @@ export default async function Page() {
       <h1>SPMO Top 20 Tracker</h1>
       <p className="subtitle">
         Invesco S&amp;P 500 Momentum ETF — top {TOP_N} holdings, weight % over time.
-        Latest snapshot {latest.asOfDate} · {sorted.length} semi-annual reconstitution{sorted.length === 1 ? "" : "s"} (May &amp; Nov only).
+        {" "}{sorted.length} rebalance period{sorted.length === 1 ? "" : "s"} (reconstituted 3rd Friday of Mar &amp; Sep);
+        each shows the earliest snapshot after that rebalance, so weights include some post-rebalance drift.
       </p>
 
       <div className="card">
@@ -74,7 +76,7 @@ export default async function Page() {
 
       <div className="card">
         <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>
-          Latest holdings · {latest.asOfDate}
+          Latest holdings · {rebalanceLabel(latest.asOfDate)} rebalance, as of {latest.asOfDate}
         </h2>
         <table>
           <thead>

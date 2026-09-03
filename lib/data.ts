@@ -8,6 +8,7 @@ import type {
   SnapshotIndex,
 } from "./types";
 import { combineSnapshot } from "./equivalents";
+import { rebalanceLabel, rebalancePeriodStart } from "./rebalance";
 
 const DATA_DIR = join(process.cwd(), "data");
 
@@ -28,31 +29,10 @@ export async function loadSnapshot(file: string): Promise<Snapshot> {
 // For non-NPORT files (e.g. daily Invesco snapshots) we keep the earliest
 // snapshot in each rebalance period — anything later in the same period is
 // the same constituents with just drift, so it'd clutter the chart.
-function thirdFridayOfMonth(year: number, month: number): string {
-  const first = new Date(Date.UTC(year, month - 1, 1));
-  const offsetToFirstFriday = (5 - first.getUTCDay() + 7) % 7;
-  const day = 1 + offsetToFirstFriday + 14;
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
 export function postRebalanceSnapshotDates(allDates: string[]): Set<string> {
-  if (allDates.length === 0) return new Set();
-  const years = allDates.map((d) => Number(d.slice(0, 4)));
-  const yearStart = Math.min(...years) - 1;
-  const yearEnd = Math.max(...years) + 1;
-  const rebDates: string[] = [];
-  for (let y = yearStart; y <= yearEnd; y++) {
-    rebDates.push(thirdFridayOfMonth(y, 3));
-    rebDates.push(thirdFridayOfMonth(y, 9));
-  }
-
   const byPeriod = new Map<string, string[]>();
   for (const date of allDates) {
-    let periodStart = "0000-00-00";
-    for (const reb of rebDates) {
-      if (reb < date) periodStart = reb;
-      else break;
-    }
+    const periodStart = rebalancePeriodStart(date) ?? "0000-00-00";
     if (!byPeriod.has(periodStart)) byPeriod.set(periodStart, []);
     byPeriod.get(periodStart)!.push(date);
   }
@@ -107,6 +87,7 @@ export async function loadAllRankings(): Promise<MonthlyRanking[]> {
 
 export type WeightSeries = {
   date: string;
+  rebalance: string; // "Mar 2026" — the period whose book this snapshot shows
   [ticker: string]: number | string | null;
 };
 
@@ -146,7 +127,10 @@ export function buildWeightSeries(
   const tickerSet = new Set(tickers);
 
   const series: WeightSeries[] = sorted.map((snap) => {
-    const row: WeightSeries = { date: snap.asOfDate };
+    const row: WeightSeries = {
+      date: snap.asOfDate,
+      rebalance: rebalanceLabel(snap.asOfDate),
+    };
     for (const t of tickerSet) row[t] = null;
     for (const h of snap.holdings) {
       if (tickerSet.has(h.ticker)) row[h.ticker] = h.weight;
