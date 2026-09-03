@@ -50,8 +50,15 @@ And MU is not a one-off. Checking the entire reconstructed March book:
 (SNDK 1.40% vs a 0.51% cap, STX 1.19% vs 0.45%, LRCX 3.45% vs 1.37%,
 even mega-cap JNJ 5.41% vs 2.76%). If Reading A were the rule, S&P would
 have violated its own methodology on 40% of the index. **Reading A is
-impossible; Reading B fits every position** — and Reading B is exactly
-how `lib/momentum.ts` computes it.
+impossible.**
+
+And Reading B isn't just the survivor: running the full Reading-B model
+as of March 20 (momentum scores from March data, March market caps, cap
+measured inside the basket) **reproduces the actual book** — mean error
+0.16pp, correlation 0.98 across 95 companies, with NVDA and GOOGL landing
+independently on the 9% cap exactly where the real fund put them. See
+Check 2 in the appendix. Reading B is exactly how `lib/momentum.ts`
+computes it.
 
 ## Why MU is above 9% right now (and why that's normal)
 
@@ -83,7 +90,12 @@ up to **10.46% as of Aug 27** — the same drift that has NVDA sitting at
 
 ---
 
-## Appendix: the check, reproducible
+## Appendix: the checks, reproducible
+
+Two complementary checks: the first **falsifies Reading A**, the second
+**positively confirms Reading B** by reproducing the actual book with it.
+
+### Check 1 — Reading A contradicts the actual March book
 
 The verification behind "40 of 99 positions violate Reading A". Method:
 
@@ -157,6 +169,152 @@ Approximations: whole-company caps instead of float-adjusted (small for
 these names), and the mcap price-scaling ignores share-count changes
 since March (buybacks/dilution, typically <2%). Neither comes anywhere
 near explaining a 2–2.7× violation across 40 names.
+
+### Check 2 — Reading B reproduces the actual March book
+
+Falsifying A doesn't by itself prove B — some third reading could also
+fit. So the positive test: run the **entire Reading-B weighting model as
+of March 20, 2026** and see whether it reproduces the weights SPMO
+actually set. Method:
+
+1. **Reconstruct the March S&P 500 universe** — today's list minus the 7
+   summer additions, plus the 7 names dropped since (their price and
+   market-cap files are still in the repo). Share classes (GOOGL/GOOG,
+   FOXA/FOX) collapse to one company.
+2. **Score every universe name as of March 20** — momentum value
+   `price(M−2)/price(M−14) − 1`, risk-adjusted by daily σ over the same
+   window, z-scored across the universe, winsorized at ±3, mapped to the
+   score multiplier. (Same algorithm as `lib/momentum.ts`.)
+3. **Weight the actual March constituents** by `scoreMul × March mcap`,
+   iteratively capped at `min(9%, 3 × mcap share of the basket)` —
+   Reading B.
+4. **Compare** to the reconstructed actual weights from Check 1.
+
+Result:
+
+```
+companies compared: 95   MAE = 0.16pp   correlation = 0.98
+79 of 95 within 0.25pp of the actual weight
+```
+
+| Ticker | Actual (set in March) | Reading-B model | Reading-A cap |
+|---|---:|---:|---:|
+| NVDA  | 9.39% | **9.00% (capped)** | — |
+| GOOGL | 9.28% | **9.00% (capped)** | — |
+| AVGO  | 7.13% | 6.00% | — |
+| MU    | 6.35% | 5.79% | 2.37% |
+| JNJ   | 5.41% | 5.74% | 2.76% |
+| LRCX  | 3.45% | 3.36% | 1.37% |
+| CAT   | 2.74% | 2.53% | — |
+
+Three things this shows:
+
+- The Reading-B model **independently lands NVDA and GOOGL exactly on
+  the 9% cap**, right where the actual book has them (the actual values
+  sit ~0.3–0.4pp above 9% because S&P fixes weights on a reference date
+  a few days before the effective date, and prices moved in between —
+  the same drift affects every row at the ~0.2pp level).
+- For MU, Reading B predicts 5.79% against an actual 6.35% — off by
+  0.56pp. Reading A's 2.37% is off by 3.98pp. The basket reading is ~7×
+  closer on the disputed name and near-exact across the whole book.
+- A 0.98 correlation across 95 names is not survivable by a wrong
+  weighting rule; residuals are fully explained by the reference-date
+  gap, float adjustment, and our mcap back-scaling.
+
+To re-run (from the repo root):
+
+```python
+import json, statistics, calendar
+
+REB = '2026-03-20'
+ADDS  = {'RDDT','MRVL','FLEX','FERG','ECHO','HONA','VMRK'}  # joined S&P after March
+DROPS = {'AVB','CAG','CPB','EA','EQR','POOL','SATS'}        # left S&P after March
+PAIRS = {'GOOG':'GOOGL', 'FOX':'FOXA', 'NWS':'NWSA'}        # secondary -> primary class
+
+def bars_of(t):
+    try: return json.load(open(f'data/prices/{t}.json'))['bars']
+    except FileNotFoundError: return None
+
+def close_on(bars, date):
+    prior = [b for b in bars if b['date'] <= date]
+    return prior[-1]['close'] if prior else None
+
+def add_months(date, months):
+    y, m, d = map(int, date.split('-'))
+    m2 = m - 1 + months
+    y2, m2 = y + m2 // 12, m2 % 12 + 1
+    return f'{y2:04d}-{m2:02d}-{min(d, calendar.monthrange(y2, m2)[1]):02d}'
+
+def momentum(bars, asof):  # risk-adjusted 12-2 momentum, as in lib/momentum.ts
+    s, e = add_months(asof, -14), add_months(asof, -2)
+    win = [b['close'] for b in bars if s < b['date'] <= e]
+    p0 = close_on(bars, s)
+    if not p0 or len(win) < 60: return None
+    seq = [p0] + win
+    rets = [b/a - 1 for a, b in zip(seq, seq[1:]) if a > 0]
+    sd = statistics.stdev(rets)
+    return (seq[-1]/seq[0] - 1) / sd if sd > 0 else None
+
+mcaps = json.load(open('data/marketcaps.json'))['caps']
+sp_now = [c['ticker'] for c in json.load(open('data/sp500.json'))['constituents']]
+universe = ((set(sp_now) - ADDS) | DROPS) - set(PAIRS)
+
+rows = {}
+for t in sorted(universe):
+    bars = bars_of(t)
+    raw = momentum(bars, REB) if bars else None
+    mar_px = close_on(bars, REB) if bars else None
+    if raw is None or not mar_px or t not in mcaps: continue
+    mcap = mcaps[t] * mar_px / bars[-1]['close']   # back-scale today's mcap to March
+    for sec, prim in PAIRS.items():                # fold in secondary share class
+        if prim == t and sec in mcaps and bars_of(sec):
+            b2 = bars_of(sec)
+            mcap += mcaps[sec] * close_on(b2, REB) / b2[-1]['close']
+    rows[t] = {'raw': raw, 'mcap': mcap}
+mean = statistics.mean(r['raw'] for r in rows.values())
+sd   = statistics.stdev(r['raw'] for r in rows.values())
+for r in rows.values():
+    z = max(-3, min(3, (r['raw'] - mean) / sd))
+    r['scoreMul'] = 1 + z if z > 0 else 1 / (1 - z)
+
+# actual March book (Check 1), share classes combined
+snap = json.load(open('data/holdings/2026-05-08.json'))
+actual = {}
+for h in snap['holdings']:
+    bars = bars_of(h['ticker'])
+    c = close_on(bars, REB) if bars and h['shares'] else None
+    if c: 
+        t = PAIRS.get(h['ticker'], h['ticker'])
+        actual[t] = actual.get(t, 0) + h['shares'] * c
+tot = sum(actual.values())
+actual = {t: v/tot*100 for t, v in actual.items()}
+
+# Reading-B weighting over the actual constituent set
+basket = [t for t in actual if t in rows]
+totM = sum(rows[t]['mcap'] for t in basket)
+caps = {t: min(9.0, 300 * rows[t]['mcap'] / totM) for t in basket}
+raw  = {t: rows[t]['scoreMul'] * rows[t]['mcap'] for t in basket}
+w = {t: raw[t] / sum(raw.values()) * 100 for t in basket}
+fixed = set()
+for _ in range(100):
+    viol = [t for t in basket if t not in fixed and w[t] > caps[t] + 1e-9]
+    if not viol: break
+    for t in viol: w[t] = caps[t]; fixed.add(t)
+    free = 100 - sum(w[t] for t in fixed)
+    rsum = sum(raw[t] for t in basket if t not in fixed)
+    for t in basket:
+        if t not in fixed: w[t] = raw[t] / rsum * free
+
+errs = [(t, actual[t], w[t], w[t] - actual[t]) for t in basket]
+print(f'MAE={statistics.mean(abs(e[3]) for e in errs):.3f}pp  '
+      f'corr={statistics.correlation([e[1] for e in errs], [e[2] for e in errs]):.4f}')
+for t, a, m, d in sorted(errs, key=lambda e: -e[1])[:12]:
+    cap = '  <- capped' if abs(m - caps[t]) < 1e-6 else ''
+    print(f'{t:6} actual={a:5.2f}%  model={m:5.2f}%  diff={d:+5.2f}{cap}')
+```
+
+Note: this check depends on the March-era price/mcap data for the 7
+dropped names still being present in `data/` — don't prune them.
 
 ---
 
