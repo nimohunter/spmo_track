@@ -41,7 +41,7 @@ export default async function GainsPage() {
       <div className="card">
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           <Stat
-            label="Net realized gain/loss"
+            label="Hypothetical realized gain (if sold outright)"
             value={formatUsd(totalRealizedGain)}
             tone={totalRealizedGain >= 0 ? "pos" : "neg"}
           />
@@ -58,7 +58,9 @@ export default async function GainsPage() {
           Held book valued at {formatUsd(report.portfolioValue)}. Cost basis = each name&apos;s close on{" "}
           {report.costBasisDate} (the prior 3rd-Friday reconstitution); positions set then have a
           holding period under one year, so realized amounts would be short-term. Realized
-          gain/loss = fraction of the position sold × (market value − cost value).
+          gain/loss = fraction of the position sold × (market value − cost value). Names held
+          across several rebalances (NVDA, for example) have a much lower true cost than the{" "}
+          {report.costBasisDate} close, so the real embedded gain is higher than shown here.
         </p>
       </div>
 
@@ -168,7 +170,15 @@ export default async function GainsPage() {
           </li>
           <li>
             <strong>Real result: $0 or a few cents per share.</strong> SPMO replaces a large part of its
-            book every year and still shows no capital gains distribution history.
+            book every year, yet every distribution since 2021 has been a small cash dividend
+            ($0.07–$0.34 per quarter), and SPMO is absent from{" "}
+            <a href="https://www.prnewswire.com/news-releases/invesco-provides-estimated-capital-gain-distribution-information-for-2025-302621383.html">
+              Invesco&apos;s 2025 capital gains list
+            </a>{" "}
+            (<a href="https://stockanalysis.com/etf/spmo/dividend/">distribution history</a>).
+            The mechanism is not automatic, though: IDMO, Invesco&apos;s <em>international</em>{" "}
+            momentum ETF, paid $1.04 per share in capital gains for 2025. Foreign stocks are
+            harder to hand over in kind, and the fund is smaller.
           </li>
           <li>
             <strong>You still pay a real cost — in the share price, not as tax.</strong> The changes
