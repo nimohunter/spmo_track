@@ -152,17 +152,38 @@ export default async function GainsPage() {
             holdings are paid out quarterly. That is income, not a capital gain, and it is small
             (SPMO yields well under 1%).
           </li>
-          <li>
-            <strong>Small leftovers are possible.</strong> Cash mergers, tender offers, or a very fast
-            drop in a stock can force a real sale. Such gains are usually tiny and often offset by
-            losses elsewhere in the book.
-          </li>
         </ul>
-        <p style={{ margin: "12px 0 0", color: "var(--muted)", fontSize: 12 }}>
-          In-kind redemption applies to all US ETFs. Heartbeat trades are widely documented for
-          index ETFs around reconstitution dates. Neither is guaranteed: the fund needs a willing
-          participant and enough trading volume in the dropped names.
-        </p>
+        <p style={{ margin: "20px 0 8px", fontWeight: 600, fontSize: 14 }}>In practice</p>
+        <ol style={listStyle}>
+          <li>
+            <strong>Most of the gain is avoided, not all of it.</strong> The swap needs a willing
+            broker and liquid stocks — SPMO&apos;s S&amp;P 500 names qualify. But some pieces are still
+            sold for cash: the leftover of a trim (say MU from 10.6% to 9%), a dropped company being
+            bought out for cash, and odd-lot rounding.
+          </li>
+          <li>
+            <strong>Losses cancel the leftovers.</strong> This book carries {formatUsd(totalLosses)} of
+            realized losses against {formatUsd(totalGains)} of gains. A fund nets the two and can carry
+            unused losses forward for years, so the sold pieces rarely produce a distribution.
+          </li>
+          <li>
+            <strong>Real result: $0 or a few cents per share.</strong> SPMO replaces a large part of its
+            book every year and still shows no capital gains distribution history.
+          </li>
+          <li>
+            <strong>You still pay a real cost — in the share price, not as tax.</strong> The changes
+            are public before the fund trades, so other traders buy the adds and sell the drops first
+            (the &quot;index effect&quot;). Add bid-ask spreads, the market impact of{" "}
+            {formatUsd(report.totalProceeds)} of turnover in one closing auction, and the swap
+            broker&apos;s spread. Together these typically cost a fraction of one percent of NAV per
+            rebalance — far below the {report.navRealizedPct.toFixed(2)}% hypothetical above.
+          </li>
+          <li>
+            <strong>Tail risk: the law changes.</strong> The swap relies on one section of US tax law
+            (Section 852(b)(6)). Lawmakers have proposed closing it more than once. If that ever
+            happens, the hypothetical number on this page becomes a real distribution.
+          </li>
+        </ol>
       </div>
 
       <div className="card">
