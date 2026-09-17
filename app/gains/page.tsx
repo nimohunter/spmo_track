@@ -31,10 +31,11 @@ export default async function GainsPage() {
       <Nav />
       <h1>Rebalance capital gains</h1>
       <p className="subtitle">
-        What SPMO would realize if it reconstituted today — selling its predicted drops in full
-        and trimming positions to their target momentum weight. Shares from the {report.snapshotDate}{" "}
-        holdings, valued at the {report.priceDate} close against cost basis at the{" "}
-        {report.costBasisDate} rebalance.
+        What SPMO would realize if it reconstituted today <em>by selling on the open market</em> —
+        dumping its predicted drops in full and trimming positions to their target momentum weight.
+        Shares from the {report.snapshotDate} holdings, valued at the {report.priceDate} close against
+        cost basis at the {report.costBasisDate} rebalance. This is a hypothetical: a real ETF avoids
+        most of these gains (see below).
       </p>
 
       <div className="card">
@@ -66,7 +67,7 @@ export default async function GainsPage() {
           <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>Per SPMO share</h2>
           <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
             <Stat
-              label="Net realized gain/loss / share"
+              label="Hypothetical gain / share (if sold outright)"
               value={formatPerShare(report.perShareNet)}
               tone={report.perShareNet >= 0 ? "pos" : "neg"}
               sub={`${report.navRealizedPct.toFixed(2)}% of NAV`}
@@ -88,16 +89,81 @@ export default async function GainsPage() {
             />
           </div>
           <p style={{ margin: "16px 0 0", color: "var(--muted)", fontSize: 13 }}>
-            The net realized gain spread across the fund&apos;s shares: each SPMO share you hold
-            would carry about {formatPerShare(report.perShareNet)} of distributable capital gain
-            ({report.navRealizedPct.toFixed(2)}% of NAV). Positions were set on {report.costBasisDate}{" "}
-            (held under a year), so a distribution would be short-term — taxed as ordinary income.
-            Your bill ≈ {formatPerShare(report.perShareNet)} × shares you hold × your marginal rate.
-            Per-share figures are an estimate (net realized gain ÷ estimated shares outstanding =
-            fund value ÷ SPMO price).
+            If SPMO were a mutual fund that sold on the market, each share would carry about{" "}
+            {formatPerShare(report.perShareNet)} of capital gain ({report.navRealizedPct.toFixed(2)}%
+            of NAV), short-term because the positions were set on {report.costBasisDate}. SPMO is
+            an ETF: it removes stocks through in-kind redemptions instead of selling, and it has no
+            history of capital gains distributions. Read this number as the tax the ETF structure
+            saves you at this rebalance, not as a payout to expect. Per-share figures are an
+            estimate (net realized gain ÷ estimated shares outstanding = fund value ÷ SPMO price).
           </p>
         </div>
       )}
+
+      <div className="card">
+        <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>How SPMO actually handles these gains</h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 24,
+          }}
+        >
+          <div>
+            <div style={compareHead("#b91c1c")}>What this page assumes</div>
+            <ol style={listStyle}>
+              <li>On rebalance day the fund sells every dropped stock for cash.</li>
+              <li>Sale price − cost basis = a realized gain, taxable to the fund.</li>
+              <li>By law the fund must pay that gain out to holders by year end.</li>
+              <li>You receive a short-term capital gains distribution and owe tax on it.</li>
+            </ol>
+          </div>
+          <div>
+            <div style={compareHead("#15803d")}>What the ETF really does</div>
+            <ol style={listStyle}>
+              <li>
+                Days before the rebalance, an authorized participant (a large broker) hands the
+                fund a basket of stocks and receives new SPMO shares. This is a normal creation.
+              </li>
+              <li>
+                On rebalance day the fund updates its redemption basket so it consists of the
+                stocks leaving the index.
+              </li>
+              <li>
+                The participant then redeems its SPMO shares. The fund pays it{" "}
+                <em>in kind</em> — with the dropped stocks — and picks the lowest-cost lots.
+              </li>
+              <li>
+                No stock was sold for cash, so no gain was realized. The dropped names are gone
+                and there is nothing to distribute. Traders call this a &quot;heartbeat trade&quot;.
+              </li>
+            </ol>
+          </div>
+        </div>
+        <p style={{ margin: "16px 0 8px", fontWeight: 600, fontSize: 14 }}>What you get instead</p>
+        <ul style={listStyle}>
+          <li>
+            <strong>No capital gains distribution.</strong> The gain does not vanish — it stays inside
+            the fund&apos;s NAV. You pay tax on it only when you sell your own SPMO shares, at the
+            long-term rate if you have held them over a year.
+          </li>
+          <li>
+            <strong>The regular cash dividend continues.</strong> Stock dividends collected from the
+            holdings are paid out quarterly. That is income, not a capital gain, and it is small
+            (SPMO yields well under 1%).
+          </li>
+          <li>
+            <strong>Small leftovers are possible.</strong> Cash mergers, tender offers, or a very fast
+            drop in a stock can force a real sale. Such gains are usually tiny and often offset by
+            losses elsewhere in the book.
+          </li>
+        </ul>
+        <p style={{ margin: "12px 0 0", color: "var(--muted)", fontSize: 12 }}>
+          In-kind redemption applies to all US ETFs. Heartbeat trades are widely documented for
+          index ETFs around reconstitution dates. Neither is guaranteed: the fund needs a willing
+          participant and enough trading volume in the dropped names.
+        </p>
+      </div>
 
       <div className="card">
         <h2 style={{ margin: "0 0 12px", fontSize: 18 }}>Positions sold at rebalance</h2>
@@ -116,6 +182,26 @@ export default async function GainsPage() {
       </div>
     </main>
   );
+}
+
+const listStyle: React.CSSProperties = {
+  margin: 0,
+  paddingLeft: 20,
+  fontSize: 14,
+  lineHeight: 1.55,
+  display: "grid",
+  gap: 6,
+};
+
+function compareHead(color: string): React.CSSProperties {
+  return {
+    fontSize: 12,
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: 0.04,
+    color,
+    marginBottom: 8,
+  };
 }
 
 function Nav() {
