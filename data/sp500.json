@@ -1,7 +1,7 @@
 {
-  "asOfDate": "2026-09-17",
+  "asOfDate": "2026-10-06",
   "source": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-  "fetchedAt": "2026-09-17T00:25:28.963Z",
+  "fetchedAt": "2026-10-06T00:17:44.405Z",
   "constituents": [
     {
       "ticker": "A",
@@ -284,6 +284,11 @@
       "sector": "Health Care"
     },
     {
+      "ticker": "BE",
+      "name": "Bloom Energy",
+      "sector": "Industrials"
+    },
+    {
       "ticker": "BEN",
       "name": "Franklin Resources",
       "sector": "Financials"
@@ -312,11 +317,6 @@
       "ticker": "BKR",
       "name": "Baker Hughes",
       "sector": "Energy"
-    },
-    {
-      "ticker": "BLDR",
-      "name": "Builders FirstSource",
-      "sector": "Industrials"
     },
     {
       "ticker": "BLK",
@@ -1219,6 +1219,11 @@
       "sector": "Materials"
     },
     {
+      "ticker": "ILMN",
+      "name": "Illumina, Inc.",
+      "sector": "Health Care"
+    },
+    {
       "ticker": "INCY",
       "name": "Incyte",
       "sector": "Health Care"
@@ -1769,6 +1774,11 @@
       "sector": "Energy"
     },
     {
+      "ticker": "P",
+      "name": "Everpure",
+      "sector": "Information Technology"
+    },
+    {
       "ticker": "PANW",
       "name": "Palo Alto Networks",
       "sector": "Information Technology"
@@ -2134,11 +2144,6 @@
       "sector": "Communication Services"
     },
     {
-      "ticker": "TAP",
-      "name": "Molson Coors Beverage Company",
-      "sector": "Consumer Staples"
-    },
-    {
       "ticker": "TDG",
       "name": "TransDigm Group",
       "sector": "Industrials"
@@ -2242,11 +2247,6 @@
       "ticker": "TT",
       "name": "Trane Technologies",
       "sector": "Industrials"
-    },
-    {
-      "ticker": "TTD",
-      "name": "Trade Desk (The)",
-      "sector": "Communication Services"
     },
     {
       "ticker": "TTWO",
