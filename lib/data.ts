@@ -28,18 +28,21 @@ export async function loadSnapshot(file: string): Promise<Snapshot> {
 // constituent set; Feb 28 / Aug 31 NPORTs are mid-cycle (weights drift only).
 // For non-NPORT files (e.g. daily Invesco snapshots) we keep the earliest
 // snapshot in each rebalance period — anything later in the same period is
-// the same constituents with just drift, so it'd clutter the chart.
-export function postRebalanceSnapshotDates(allDates: string[]): Set<string> {
-  const byPeriod = new Map<string, string[]>();
-  for (const date of allDates) {
-    const periodStart = rebalancePeriodStart(date) ?? "0000-00-00";
+// the same constituents with just drift, so it'd clutter the chart. A full
+// snapshot (≥50 names) wins over an earlier partial top-25 one.
+export function postRebalanceSnapshotDates(
+  all: { date: string; full: boolean }[],
+): Set<string> {
+  const byPeriod = new Map<string, { date: string; full: boolean }[]>();
+  for (const s of all) {
+    const periodStart = rebalancePeriodStart(s.date) ?? "0000-00-00";
     if (!byPeriod.has(periodStart)) byPeriod.set(periodStart, []);
-    byPeriod.get(periodStart)!.push(date);
+    byPeriod.get(periodStart)!.push(s);
   }
   const markers = new Set<string>();
-  for (const dates of byPeriod.values()) {
-    dates.sort();
-    markers.add(dates[0]);
+  for (const snaps of byPeriod.values()) {
+    snaps.sort((a, b) => a.date.localeCompare(b.date));
+    markers.add((snaps.find((s) => s.full) ?? snaps[0]).date);
   }
   return markers;
 }
@@ -61,10 +64,11 @@ export async function loadLatestFullSnapshot(asOf?: string): Promise<Snapshot | 
 
 export async function loadAllSnapshots(): Promise<Snapshot[]> {
   const index = await loadIndex();
-  const markers = postRebalanceSnapshotDates(index.snapshots.map((s) => s.date));
-  const kept = index.snapshots.filter((s) => markers.has(s.date));
-  const raw = await Promise.all(kept.map((s) => loadSnapshot(s.file)));
-  return raw.map(combineSnapshot);
+  const all = await Promise.all(index.snapshots.map((s) => loadSnapshot(s.file)));
+  const markers = postRebalanceSnapshotDates(
+    all.map((s) => ({ date: s.asOfDate, full: s.holdings.length >= 50 })),
+  );
+  return all.filter((s) => markers.has(s.asOfDate)).map(combineSnapshot);
 }
 
 const RANKING_INDEX_PATH = join(DATA_DIR, "rankings-index.json");
