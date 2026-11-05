@@ -1,7 +1,7 @@
 {
-  "asOfDate": "2026-10-06",
+  "asOfDate": "2026-11-05",
   "source": "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-  "fetchedAt": "2026-10-06T00:17:44.405Z",
+  "fetchedAt": "2026-11-05T02:31:36.185Z",
   "constituents": [
     {
       "ticker": "A",
@@ -607,11 +607,6 @@
       "ticker": "CTSH",
       "name": "Cognizant",
       "sector": "Information Technology"
-    },
-    {
-      "ticker": "CTVA",
-      "name": "Corteva",
-      "sector": "Materials"
     },
     {
       "ticker": "CVNA",
@@ -1374,11 +1369,6 @@
       "sector": "Consumer Staples"
     },
     {
-      "ticker": "KVUE",
-      "name": "Kenvue",
-      "sector": "Consumer Staples"
-    },
-    {
       "ticker": "L",
       "name": "Loews Corporation",
       "sector": "Financials"
@@ -1500,7 +1490,7 @@
     },
     {
       "ticker": "MCK",
-      "name": "McKesson Corporation",
+      "name": "McKesson",
       "sector": "Health Care"
     },
     {
@@ -1744,6 +1734,11 @@
       "sector": "Energy"
     },
     {
+      "ticker": "OKTA",
+      "name": "Okta, Inc.",
+      "sector": "Information Technology"
+    },
+    {
       "ticker": "OMC",
       "name": "Omnicom Group",
       "sector": "Communication Services"
@@ -1899,11 +1894,6 @@
       "sector": "Real Estate"
     },
     {
-      "ticker": "PSKY",
-      "name": "Paramount Skydance Corporation",
-      "sector": "Communication Services"
-    },
-    {
       "ticker": "PSX",
       "name": "Phillips 66",
       "sector": "Energy"
@@ -1970,7 +1960,7 @@
     },
     {
       "ticker": "RMD",
-      "name": "ResMed|",
+      "name": "ResMed",
       "sector": "Health Care"
     },
     {
@@ -2032,6 +2022,11 @@
       "ticker": "SJM",
       "name": "J.M. Smucker Company (The)",
       "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "SKYD",
+      "name": "Skydance",
+      "sector": "Communication Services"
     },
     {
       "ticker": "SLB",
@@ -2254,6 +2249,11 @@
       "sector": "Communication Services"
     },
     {
+      "ticker": "TWLO",
+      "name": "Twilio",
+      "sector": "Information Technology"
+    },
+    {
       "ticker": "TXN",
       "name": "Texas Instruments",
       "sector": "Information Technology"
@@ -2389,6 +2389,11 @@
       "sector": "Health Care"
     },
     {
+      "ticker": "VYLR",
+      "name": "Vylor",
+      "sector": "Consumer Staples"
+    },
+    {
       "ticker": "VZ",
       "name": "Verizon",
       "sector": "Communication Services"
@@ -2402,11 +2407,6 @@
       "ticker": "WAT",
       "name": "Waters Corporation",
       "sector": "Health Care"
-    },
-    {
-      "ticker": "WBD",
-      "name": "Warner Bros. Discovery",
-      "sector": "Communication Services"
     },
     {
       "ticker": "WDAY",
